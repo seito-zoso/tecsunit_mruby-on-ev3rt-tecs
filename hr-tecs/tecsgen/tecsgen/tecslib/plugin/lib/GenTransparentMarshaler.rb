@@ -34,7 +34,7 @@
 #   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
 #   の責任を負わない．
 #  
-#   $Id: GenTransparentMarshaler.rb 2418 2016-01-04 12:17:36Z okuma-top $
+#   $Id: GenTransparentMarshaler.rb 2952 2018-05-07 10:19:07Z okuma-top $
 #++
 
 #プラグインオプション用変数
@@ -387,12 +387,13 @@ EOT
         syslog(LOG_INFO, "unmarshaler task: ERROR: unknown func_id: %d", func_id_ );
     };
 #{ppallocator_dealloc_str}
-    return;
+    return E_OK;
 
 error_reset:
     if( ercd_ != ERCD( E_RPC, E_RESET ) )
         (void)cTDR_reset();
 #{ppallocator_dealloc_str}
+    return E_OK;
 EOT
 
   end
