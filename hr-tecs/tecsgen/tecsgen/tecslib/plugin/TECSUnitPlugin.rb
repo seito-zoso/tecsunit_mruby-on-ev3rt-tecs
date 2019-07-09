@@ -143,17 +143,17 @@ EOT
     /* エラー処理コードをここに記述します */
   } /* end if VALID_IDX(idx) */
   puts("");
-  printf( "--- TECSUnit ---\\n" );
+  // printf( "--- TECSUnit ---\\n" );
   void *rawDesc;
 EOT
 
-    print_desc( file, Namespace.get_root )
+    # print_desc( file, Namespace.get_root )
 
-    file.print <<EOT
-  sprintf( VAR_cell_entry, "%s.%s", cell_path, entry_path );
-  getRawEntryDescriptor( p_cellcb, VAR_cell_entry, &rawDesc, signature_path );
-EOT
-    print_branch_sig( file, Namespace.get_root )
+#     file.print <<EOT
+#   sprintf( VAR_cell_entry, "%s.%s", cell_path, entry_path );
+#   getRawEntryDescriptor( p_cellcb, VAR_cell_entry, &rawDesc, signature_path );
+# EOT
+#     print_branch_sig( file, Namespace.get_root )
   end
 
   def print_desc( file, namespace )
@@ -309,11 +309,11 @@ EOT
   def print_call_desc1( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
     file.print <<EOT
       if( !strcmp( function_path, "#{str}" ) ){
-        printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
+        // printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-          printf("\\nResult：OK\\n");
+          // printf("\\nResult：OK\\n");
         }else{
-          printf("\\nResult：NG\\n");
+          // printf("\\nResult：NG\\n");
         }
 EOT
     out_check( file, int_count, double_count, char_count )
@@ -325,11 +325,11 @@ EOT
   def print_call_desc2( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
     file.print <<EOT
       else if( !strcmp( function_path, "#{str}" ) ){
-        printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
+        // printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-          printf("\\nResult：OK\\n");
+          // printf("\\nResult：OK\\n");
         }else{
-          printf("\\nResult：NG\\n");
+          // printf("\\nResult：NG\\n");
         }
 EOT
     out_check( file, int_count, double_count, char_count )
@@ -342,22 +342,22 @@ EOT
 
     for i in 1..int_count
       file.print <<EOT
-        printf("[out]：#{i}番目の整数型の値：");
-        printf("%d\\n", VAR_out_int[#{i-1}]);
+        // printf("[out]：#{i}番目の整数型の値：");
+        // printf("%d\\n", VAR_out_int[#{i-1}]);
 EOT
     end
 
     for i in 1..double_count
       file.print <<EOT
-        printf("[out]：#{i}番目の浮動小数点型の値：");
-        printf("%f\\n", VAR_out_double[#{i-1}]);
+        // printf("[out]：#{i}番目の浮動小数点型の値：");
+        // printf("%f\\n", VAR_out_double[#{i-1}]);
 EOT
     end
 
     for i in 1..char_count
       file.print <<EOT
-        printf("[out]：#{i}番目のchar型の値：");
-        printf("%s\\n", VAR_out_char[#{i-1}]);
+        // printf("[out]：#{i}番目のchar型の値：");
+        // printf("%s\\n", VAR_out_char[#{i-1}]);
 EOT
     end
 
@@ -386,7 +386,7 @@ ER getRawEntryDescriptor( CELLCB *p_cellcb, char_t *entry_path, void **rawEntryD
 
     ercd = cTECSInfo_findRawEntryDescriptor( entry_path, &rawEntryDescDesc, &entryDesc );
     if( ercd != E_OK ){
-        printf( "call_sTask: error cTECSInfo_findRawEntryDescriptor( entry_path=%s ) = %d\\n", entry_path, ercd );
+        // printf( "call_sTask: error cTECSInfo_findRawEntryDescriptor( entry_path=%s ) = %d\\n", entry_path, ercd );
     }
     else {
 #define NAME_LEN  (256)
@@ -399,10 +399,10 @@ ER getRawEntryDescriptor( CELLCB *p_cellcb, char_t *entry_path, void **rawEntryD
         cSignatureInfo_set_descriptor( signatureDesc );
         ercd = cSignatureInfo_getName( name, NAME_LEN );
         if( ercd != E_OK ){
-            printf( "getRawEntryDescriptor: error cannot get signature name. expectd: \'%s\'\\n", expected_signature );
+            // printf( "getRawEntryDescriptor: error cannot get signature name. expectd: \'%s\'\\n", expected_signature );
         }
         if( strcmp( name, expected_signature ) != 0 ){
-            printf( "getRawEntryDescriptor: error signature name \'%s\' mismatch expecting \'%s\'\\n", name, expected_signature );
+            // printf( "getRawEntryDescriptor: error signature name \'%s\' mismatch expecting \'%s\'\\n", name, expected_signature );
             ercd = E_NOEXS;
         }
         cREDInfo_getRawDescriptor( 0, rawEntryDesc );

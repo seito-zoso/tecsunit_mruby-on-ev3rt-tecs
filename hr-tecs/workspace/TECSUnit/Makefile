@@ -54,7 +54,7 @@ endef
 all:
 
 # SDのドライブ文字を指定
-SD_DIR = /cygdrive/e/
+SD_DIR = /cygdrive/d/
 
 #
 #  ターゲット略称の定義
@@ -182,6 +182,7 @@ MKIMAGE = $(SRCDIR)/../bin/mkimage.exe
 RUBYLIB = $(SRCDIR)/tecsgen/tecsgen
 TECSGEN_DIR = $(RUBYLIB)
 TECSGEN = $(RUBY) $(TECSGEN_DIR)/tecsgen.rb -L $(RUBYLIB) -k euc --cpp="$(GCC_TARGET_PREFIX)gcc -E"
+JSMN_DIR = ./jsmn
 
 TECSLIB_DIR = $(SRCDIR)/tecs_lib
 MRUBY_LIB_DIR = $(SRCDIR)/mruby_lib
@@ -204,6 +205,8 @@ else
   CFG2_OUT = cfg2_out
   CFG3_OUT = cfg3_out
 endif
+# OTHER_OBJS = $(JSMN_DIR)/libjsmn.a              # Add objects out of tecs care.
+JSMN_OBJ = $(JSMN_DIR)/jsmn.o
 
 #
 #  ターゲット依存部のディレクトリの定義
@@ -268,7 +271,7 @@ ifndef OMIT_OPTIMIZATION
   COPTS := $(COPTS) -O2
 endif
 CDEFS := $(CDEFS)
-INCLUDES := -I. -I./gen -I$(SRCDIR)/tecs_kernel -I./target \
+INCLUDES := -I. -I./gen -I$(SRCDIR)/tecs_kernel -I./target -I./jsmn \
 			-I$(SRCDIR)/include -I$(SRCDIR)/arch -I$(SRCDIR) -I$(SRCDIR)/target/ev3_gcc/api/src\
       		-I$(MRUBY_SRC_DIR)/include \
             -I$(SRCDIR)/tecs_lib/mindstorms_ev3 -I$(SRCDIR)/tecs_lib/common \
@@ -276,13 +279,14 @@ INCLUDES := -I. -I./gen -I$(SRCDIR)/tecs_kernel -I./target \
 			-I$(TECSGEN_DIR)/tecs/mruby \
 			-I$(TECSGEN_DIR)/tecs/TLSFMalloc \
             -I$(TECSGEN_DIR)/tecs/posix $(INCLUDES) \
-      -I$(SRCDIR)/target/ev3_gcc/drivers/fatfs/ff10b/src
+      -I$(SRCDIR)/target/ev3_gcc/drivers/fatfs/ff10b/src \
+      -I$(TECSGEN_DIR)/tecs/TECSInfo
 
 
-LDFLAGS := $(LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/
-CFG1_OUT_LDFLAGS := $(CFG1_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/
-CFG2_OUT_LDFLAGS := $(CFG2_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/
-CFG3_OUT_LDFLAGS := $(CFG3_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/
+LDFLAGS := $(LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/ -L $(JSMN_DIR)
+CFG1_OUT_LDFLAGS := $(CFG1_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/ -L $(JSMN_DIR)
+CFG2_OUT_LDFLAGS := $(CFG2_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/ -L $(JSMN_DIR)
+CFG3_OUT_LDFLAGS := $(CFG3_OUT_LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/ -L $(JSMN_DIR)
 LIBS := $(LIBS) $(CXXLIBS)
 CFLAGS = $(COPTS) $(CDEFS) $(INCLUDES)
 
@@ -358,6 +362,7 @@ endif
 #
 #all: $(OBJFILE)
 all: $(OBJNAME).bin uImage
+
 #all: $(OBJNAME).srec
 
 ##### 以下は編集しないこと #####
@@ -387,7 +392,7 @@ endif
 #
 INCLUDES += $(foreach dir,$(shell find $(APPLDIR) -type d -name include),-I$(dir))
 APPL_DIR += $(foreach dir,$(shell find $(APPLDIR) -type d -name src),$(dir))
-vpath %.c ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR) $(SRCDIR)/tecs_lib/mindstorms_ev3 $(SRCDIR)/tecs_lib/common $(SRCDIR)/tecsgen/tecsgen/tecs/mruby
+vpath %.c ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR) $(SRCDIR)/tecs_lib/mindstorms_ev3 $(SRCDIR)/tecs_lib/common $(SRCDIR)/tecsgen/tecsgen/tecs/mruby $(TECSGEN_DIR)/tecs/TECSInfo
 vpath %.cpp /gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.S ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.cfg ./gen $(APPL_DIR)
@@ -554,8 +559,8 @@ banner.o: kernel_cfg.timestamp $(filter-out banner.o,$(ALL2_OBJS)) $(LIBS_DEP)
 #
 #  全体のリンク
 #
-$(OBJFILE): $(APPL_CFG) kernel_cfg.timestamp $(ALL_OBJS) $(LIBS_DEP)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(OBJFILE) $(START_OBJS) \
+$(OBJFILE): $(APPL_CFG) kernel_cfg.timestamp $(ALL_OBJS) $(LIBS_DEP) $(JSMN_OBJ)
+	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(OBJFILE) $(START_OBJS) $(JSMN_OBJ) \
 			$(APPL_OBJS) $(MRUBY_LIB) $(SYSSVC_OBJS) $(CFG_OBJS) $(ALL_LIBS) $(END_OBJS)
 	$(NM) -n $(OBJFILE) > $(OBJNAME).syms
 ifdef USE_CFG_PASS3
@@ -579,6 +584,15 @@ uImage:$(OBJNAME).bin
 #
 $(OBJNAME).srec: $(OBJFILE)
 	$(OBJCOPY) -O srec -S $(OBJFILE) $(OBJNAME).srec
+#
+#  jsmnのリンク
+#
+# $(OTHER_OBJS): $(JSMN_DIR)/jsmn.o
+# 	$(AR) rcs $@ $^
+# 	$(RANLIB) $(OTHER_OBJS)
+
+$(JSMN_OBJ): $(JSMN_DIR)/jsmn.c $(JSMN_DIR)/jsmn.h
+	$(CC) -c $(CFLAGS) $(CFG_CFLAGS) $< -o $@
 
 #
 #  コンパイル結果の消去

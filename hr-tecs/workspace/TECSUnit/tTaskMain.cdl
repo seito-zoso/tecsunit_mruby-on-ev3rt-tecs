@@ -3,6 +3,12 @@ celltype tTaskMain {
     call  sTECSUnit            cUnit;
     call  sJSMN                cJSMN;
 
+    /* EV3RT+TECS */
+    call sKernel cKernel;
+    call sLCD cLCD;
+    call sButton cButton;
+
+    /* TECSInfo */
     call  nTECSInfo::sTECSInfo cTECSInfo;
     [dynamic,optional]
         call  nTECSInfo::sNamespaceInfo cNSInfo;
@@ -61,14 +67,19 @@ celltype tTaskMain {
 
 region rDomainEV3{
     cell tTask Task {
-        taskAttribute = C_EXP("TA_ACT");
-        priority      = 11;
-        stackSize     = 4096;
+        taskAttribute   = C_EXP("TA_ACT");
+        priority        = C_EXP("EV3_MRUBY_VM_PRIORITY");
+        systemStackSize = C_EXP("MRUBY_VM_STACK_SIZE");
+        //userStackSize = C_EXP("STACK_SIZE");
         cBody         = TaskMain.eBody;
     };
     cell tTaskMain TaskMain {
         cTECSInfo  = TECSInfo.eTECSInfo;
         cUnit = TECSUnit.eUnit;
+
+        cKernel = HRP2Kernel.eKernel;
+        cButton = Button.eButton;
+        cLCD = LCD.eLCD;
         // この結合は TECSUnitPlugin により自動生成される
         cJSMN = JSMN.eJSMN;
     };

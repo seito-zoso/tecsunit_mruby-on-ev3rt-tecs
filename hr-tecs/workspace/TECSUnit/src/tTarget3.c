@@ -14,6 +14,7 @@
 /* プロトタイプ宣言や変数の定義をここに書きます #_PAC_# */
 #include "tTarget3_tecsgen.h"
 #include "string.h"
+#include "target_struct.h"
 
 #ifndef E_OK
 #define	E_OK	0		/* success */

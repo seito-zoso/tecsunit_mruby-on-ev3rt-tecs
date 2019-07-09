@@ -91,10 +91,10 @@ EOT
       print_json_open( file, Namespace.get_root )
     end
     if func_name.to_s == "json_parse_path" then
-      print_parse_path( file, Namespace.get_root )
+      # print_parse_path( file, Namespace.get_root )
     end
     if func_name.to_s == "json_parse_arg" then
-      print_parse_arg( file, Namespace.get_root )
+      # print_parse_arg( file, Namespace.get_root )
     end
 
   end
@@ -112,13 +112,13 @@ EOT
   /* ここに処理本体を記述します #_TEFB_# */
     char str_tmp[N];
     int co_flag = 0, co_start, i, j;
-    FILE *fp;
+    FIL *fp;
 
-    if( ( fp = fopen("target.json", "r") ) == NULL ){
-        printf("Failed to open\\n");
+    if( f_open( fp, "target.json", FA_READ | FA_OPEN_EXISTING )  != FR_OK ){
+        // printf("Failed to open\\n");
         return -1;
     }
-    while( fgets( str_tmp , N, fp ) != NULL ) {
+    while( f_gets( str_tmp , N, fp ) != NULL ) {
         co_start = 0;
         for( i = 0; i < N -1; i++ ){
             if( str_tmp[i] == '/' && str_tmp[i+1] == '/' && !co_flag ){
@@ -146,7 +146,7 @@ EOT
             strcat( VAR_json_str, str_tmp );
         }
     }
-    fclose( fp );
+    f_close( fp );
     return 0;
 EOT
   end
@@ -174,12 +174,12 @@ ER    ercd = E_OK;
     jsmn_init(&p);
     r = jsmn_parse( &p, VAR_json_str, strlen(VAR_json_str), t, sizeof(t)/sizeof(t[0]) );
     if(r < 0){
-        printf( "Failed to parse JSON: %d\\n", r );
+      //  printf( "Failed to parse JSON: %d\\n", r );
         return -1;
     }
   /* Assume the top-level element is an object */
     if( r < 1 || t[0].type != JSMN_OBJECT ){
-        printf( "Object expected\\n" );
+      //  printf( "Object expected\\n" );
         return -1;
     }
 
@@ -187,7 +187,7 @@ ER    ercd = E_OK;
     for( l = 1; l < r; l++ ){
         if( jsoneq( VAR_json_str, &t[l], target_path ) == 0 ){
             if( t[l+1].type != JSMN_OBJECT ){
-                printf("Object expected for target\\n");
+                // printf("Object expected for target\\n");
                 return -1;
             }
             i = l + 2;
@@ -229,7 +229,7 @@ ER    ercd = E_OK;
                 }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_exp ) == 0 ){
                     i += 2; /* ignore */
                 }else{
-                    printf( "Unexpected key: %.*s\\n", t[i].end-t[i].start, VAR_json_str + t[i].start );
+                  //  printf( "Unexpected key: %.*s\\n", t[i].end-t[i].start, VAR_json_str + t[i].start );
                     return -1;
                 }
             }
@@ -327,12 +327,12 @@ p struct_mem_list
     jsmn_init(&p);
     r = jsmn_parse( &p, VAR_json_str, strlen(VAR_json_str), t, sizeof(t)/sizeof(t[0]) );
     if(r < 0){
-        printf( "Failed to parse JSON: %d\\n", r );
+        // printf( "Failed to parse JSON: %d\\n", r );
         return -1;
     }
   /* Assume the top-level element is an object */
     if( r < 1 || t[0].type != JSMN_OBJECT ){
-        printf( "Object expected\\n" );
+        // printf( "Object expected\\n" );
         return -1;
     }
 
@@ -340,7 +340,7 @@ p struct_mem_list
     for( l = 1; l < r; l++ ){
         if( jsoneq( VAR_json_str, &t[l], target_path ) == 0 ){
             if( t[l+1].type != JSMN_OBJECT ){
-                printf("Object expected for target\\n");
+                // printf("Object expected for target\\n");
                 return -1;
             }
             i = l + 2;
@@ -362,7 +362,7 @@ p struct_mem_list
                         i += 1; // iは各要素を指す
                         if( t[i].type == JSMN_OBJECT ){
                             if( strstr( arguments[j].type, "const struct" ) == NULL ){
-                              printf("Arg %d is not struct type\\n", j+1 );
+                              // printf("Arg %d is not struct type\\n", j+1 );
                               return -1;
                             }
                             array_size =  t[i].size;
@@ -382,7 +382,7 @@ EOT
     print_arr_list( file, arr_list, out_list )
     file.print <<EOT
                                 }else{
-                                    printf("Arg %d is not array type\\n", j+1 );
+                                    // printf("Arg %d is not array type\\n", j+1 );
                                     return -1;
                                 }
                             }
@@ -391,7 +391,7 @@ EOT
     print_char_list( file, char_list )
     file.print <<EOT
                             }else{
-                                printf("Arg %d is not string type\\n", j+1 );
+                                // printf("Arg %d is not string type\\n", j+1 );
                                 return -1;
                             }
                         }else if( t[i].type == JSMN_PRIMITIVE ){
@@ -400,23 +400,23 @@ EOT
     print_num_list( file, num_list )
     file.print <<EOT
                             }else{
-                                printf("Arg %d is not numeric type\\n", j+1 );
+                                // printf("Arg %d is not numeric type\\n", j+1 );
                                 return -1;
                             }
                         }else if( t[i].type == JSMN_UNDEFINED ){
-                            printf( "Unexpected value: %.*s\\n", t[i].end - t[i].start, VAR_json_str + t[i].start );
+                            // printf( "Unexpected value: %.*s\\n", t[i].end - t[i].start, VAR_json_str + t[i].start );
                         }else{
-                            printf( "Wrong Type: %.*s\\n", t[i].end - t[i].start, VAR_json_str + t[i].start );
+                            // printf( "Wrong Type: %.*s\\n", t[i].end - t[i].start, VAR_json_str + t[i].start );
                         }
                     }
                     i += 1; // 最後には配列を抜ける
                 /* 期待値 */
                 }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_exp ) == 0 ){
                     if( t[i+1].type == JSMN_ARRAY ){
-                        printf("Return type is not support \'char\' \\n", j+1 );
+                        // printf("Return type is not support \'char\' \\n", j+1 );
                         return -1;
                     }else if( t[i+1].type == JSMN_STRING ){
-                        printf("Return type is not support \'char\' \\n", j+1 );
+                        // printf("Return type is not support \'char\' \\n", j+1 );
                         return -1;
                     }else if( t[i+1].type == JSMN_PRIMITIVE ){
                         strcpy_n( VAR_tmp_str, t[i+1].end - t[i+1].start, VAR_json_str + t[i+1].start );
@@ -424,13 +424,13 @@ EOT
     print_ret_type_list( file, ret_type_list )
     file.print <<EOT
                     }else if( t[i+1].type == JSMN_UNDEFINED ){
-                        printf( "Unexpected value: %.*s\\n", t[i+1].end - t[i+1].start, VAR_json_str + t[i+1].start );
+                        // printf( "Unexpected value: %.*s\\n", t[i+1].end - t[i+1].start, VAR_json_str + t[i+1].start );
                     }else{
-                        printf( "Wrong Type: %.*s\\n", t[i+1].end - t[i+1].start, VAR_json_str + t[i+1].start );
+                        // printf( "Wrong Type: %.*s\\n", t[i+1].end - t[i+1].start, VAR_json_str + t[i+1].start );
                     }
                     i += 2;
                 }else{
-                    printf( "Unexpected key: %.*s\\n", t[i].end-t[i].start, VAR_json_str + t[i].start );
+                    // printf( "Unexpected key: %.*s\\n", t[i].end-t[i].start, VAR_json_str + t[i].start );
                     return -1;
                 }
             }
@@ -497,7 +497,7 @@ EOT
                             strcpy_n( VAR_tmp_str, t[i].end - t[i].start, VAR_json_str + t[i].start );
                             if( !strcmp(VAR_tmp_str, "[out]") ){
                                 if( strstr(arguments[j].type,"const") != NULL ){
-                                    printf("Arg %d is not out arguments\\n", j+1 );
+                                    // printf("Arg %d is not out arguments\\n", j+1 );
                                     return -1;
                                 }
 EOT
@@ -569,7 +569,7 @@ EOT
 EOT
         elsif struct_mem_type_list[idx][idx2].include?("const") && struct_mem_type_list[idx][idx2].include?("*") then
           file.print <<EOT
-                                        printf("Not support Array type in struct\n");
+                                        // printf("Not support Array type in struct\n");
                                         return -1;
 EOT
         elsif struct_mem_type_list[idx][idx2].include?("double") || struct_mem_type_list[idx][idx2].include?("float") then
@@ -586,11 +586,11 @@ EOT
       }
         file.print <<EOT
                                     }else{
-                                       printf("Member %s cannot found \\n", VAR_tmp_str );
+                                       // printf("Member %s cannot found \\n", VAR_tmp_str );
                                        return -1;
                                     }
                                 }else{
-                                  printf("Struct %s cannot found\\n", arguments[j].type);
+                                  // printf("Struct %s cannot found\\n", arguments[j].type);
                                   return -1;
                                 }
 EOT
@@ -643,6 +643,7 @@ EOT
 #include "tJSMN_tecsgen.h"
 #include <stdio.h>
 #include <jsmn.h>
+#include <ff.h>
 #define N 128
 
 static int

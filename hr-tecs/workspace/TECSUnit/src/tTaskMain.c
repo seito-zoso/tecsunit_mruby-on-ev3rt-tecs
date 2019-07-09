@@ -1,8 +1,8 @@
 /* #[<PREAMBLE>]#
- * #[<...>]# から #[</...>]# で囲まれたコメントは編集しないでください
- * tecsmerge によるマージに使用されます
+ * #[<...>]# ????#[</...>]# ?ǰϤޤ줿?????Ȥ?Խ????ʤ??Ǥ???????
+ * tecsmerge ?ˤ??ޡ????˻?Ѥ?????
  *
- * 属性アクセスマクロ #_CAAM_#
+ * °???????????ޥ???#_CAAM_#
  * NAME_LEN         int16_t          ATTR_NAME_LEN
  * ARG_NAME_LEN     int16_t          ATTR_ARG_NAME_LEN
  * ARG_DIM          int16_t          ATTR_ARG_DIM
@@ -21,13 +21,48 @@
  * find_entry       int8_t           VAR_find_entry
  * find_func        int8_t           VAR_find_func
  *
- * 呼び口関数 #_TCPF_#
+ * ?ƤӸ??ؿ?#_TCPF_#
  * call port: cUnit signature: sTECSUnit context:task
  *   void           cUnit_main( const char_t* cell_path, const char_t* entry_path, const char_t* signature_path, const char_t* function_path, const struct tecsunit_obj* arguments, const struct tecsunit_obj* exp_val );
  * call port: cJSMN signature: sJSMN context:task
  *   ER             cJSMN_json_open( );
  *   ER             cJSMN_json_parse_path( char_t* c_path, char_t* e_path, char_t* f_path, int target_num, int btr );
  *   ER             cJSMN_json_parse_arg( struct tecsunit_obj* arguments, struct tecsunit_obj* exp_val, int* arg_num, int target_num, int btr );
+ * call port: cKernel signature: sKernel context:task
+ *   ER             cKernel_sleep( );
+ *   ER             cKernel_sleepTimeout( TMO timeout );
+ *   ER             cKernel_delay( RELTIM delayTime );
+ *   ER             cKernel_exitTask( );
+ *   ER             cKernel_getTaskId( ID* p_taskId );
+ *   ER             cKernel_rotateReadyQueue( PRI taskPriority );
+ *   ER             cKernel_getTime( SYSTIM* p_systemTime );
+ *   ER             cKernel_getMicroTime( SYSUTM* p_systemMicroTime );
+ *   ER             cKernel_lockCpu( );
+ *   ER             cKernel_unlockCpu( );
+ *   ER             cKernel_disableDispatch( );
+ *   ER             cKernel_enableDispatch( );
+ *   ER             cKernel_disableTaskException( );
+ *   ER             cKernel_enableTaskException( );
+ *   ER             cKernel_changeInterruptPriorityMask( PRI interruptPriority );
+ *   ER             cKernel_getInterruptPriorityMask( PRI* p_interruptPriority );
+ *   ER             cKernel_exitKernel( );
+ *   bool_t         cKernel_senseContext( );
+ *   bool_t         cKernel_senseLock( );
+ *   bool_t         cKernel_senseDispatch( );
+ *   bool_t         cKernel_senseDispatchPendingState( );
+ *   bool_t         cKernel_senseKernel( );
+ * call port: cLCD signature: sLCD context:task
+ *   ER             cLCD_setFont( lcdfont_t font );
+ *   ER             cLCD_getFontSize( lcdfont_t font, int32_t* p_width, int32_t* p_height );
+ *   ER             cLCD_drawString( const char* str, int32_t x, int32_t y );
+ *   ER             cLCD_fillRect( int32_t x, int32_t y, int32_t w, int32_t h, lcdcolor_t color );
+ *   ER             cLCD_drawLine( int32_t x0, int32_t y0, int32_t x1, int32_t y1 );
+ *   void           cLCD_print( const char* str );
+ *   void           cLCD_puts( const char* str );
+ *   void           cLCD_clear( );
+ *   void           cLCD_showMessageBox( const char* title, const char* msg );
+ * call port: cButton signature: sButton context:task
+ *   bool_t         cButton_isPressed( button_t button );
  * call port: cTECSInfo signature: nTECSInfo_sTECSInfo context:task
  *   ER             cTECSInfo_findNamespace( const char_t* namespace_path, Descriptor( nTECSInfo_sNamespaceInfo )* nsDesc );
  *   ER             cTECSInfo_findRegion( const char_t* namespace_path, Descriptor( nTECSInfo_sRegionInfo )* regionDesc );
@@ -232,48 +267,63 @@ eBody_main(CELLIDX idx)
         if( ercd == 1 ) continue; /* そのtarget#は見つからなかった */
         if( ercd == -1 ) return; /* jsmnエラー */
 
-        printf( "** Target%d\n", j );
-        printf( "--- JSON ---\n" );
-        printf( "- Cell: \"%s\"\n", VAR_cell_path );
-        printf( "- Entry: \"%s\"\n", VAR_entry_path_tmp );
-        printf( "- Function: \"%s\"\n", VAR_function_path_tmp );
-
-
-        puts("");
-        printf( "--- TECSInfo ---\n" );
-        print_cell_by_path( p_cellcb, VAR_cell_path , &flag );
-
-        if( flag ){
-            printf( "Eroor: Cell \"%s\" cannot found\n", VAR_cell_path );
-            return;
-        }else if( isNull(VAR_entry_path) ){
-            printf( "Error: Entry \"%s\" cannot found\n", VAR_entry_path_tmp );
-            return;
-        }else if( isNull(VAR_function_path) ){
-            printf( "Error: Function \"%s\" cannot found\n", VAR_function_path_tmp );
-            return;
+        cLCD_setFont( EV3_FONT_MEDIUM );
+        cLCD_drawString( "Target", 0, 0 );
+        // cLCD_drawString( itoa(j), 0, 7 );
+        cLCD_drawString( "- Cell:", 1, 0 );
+        cLCD_drawString( VAR_cell_path, 1, 8 );
+        cLCD_drawString( "- Entry:", 2, 0 );
+        cLCD_drawString( VAR_entry_path, 2, 9 );
+        cLCD_drawString( "- Func:", 3, 8 );
+        cLCD_drawString( VAR_function_path, 3, 0 );
+        cLCD_drawString( " >> Press Enter", 5, 0 );
+        while(1){
+            if( cButton_isPressed( ENTER_BUTTON ) ){
+                cLCD_clear();
+                break;
+            }
         }
-        printf( "- Celltype: \"%s\"\n", VAR_celltype_path );
-        printf( "- Signature: \"%s\"\n", VAR_signature_path );
-        printf( "- # of arg: %d\n", VAR_arg_num );
 
-        for( i = 0; i < VAR_arg_num; i++ ){
-            printf( "  %d %s %s\n", i+1, VAR_arg_type[i], VAR_arg[i] );
-            strcpy( arguments[i].type, VAR_arg_type[i] );
-        }
-        strcpy( exp_val.type, VAR_exp_type );
-        printf( "- Return Type: %s\n", exp_val.type );
-        // argumentsにはtypeのみがTECSInfoにより入っている状態。
-        ercd = cJSMN_json_parse_arg( arguments, &exp_val, &arg_num, j, ATTR_NAME_LEN );
-        if( ercd == -1 ) return; /* jsmnエラー */
+        // printf( "--- JSON ---\n" );
+        // printf( "- Cell: \"%s\"\n", VAR_cell_path );
+        // printf( "- Entry: \"%s\"\n", VAR_entry_path_tmp );
+        // printf( "- Function: \"%s\"\n", VAR_function_path_tmp );
 
-        if( arg_num != VAR_arg_num ){
-            printf( "Error: Wrong number of arguments\n" );
-            printf( "You expected %d arguments. Function \"%s\" has %d arguments\n",
-                arg_num, VAR_function_path, VAR_arg_num );
-        }
-        cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, arguments, &exp_val );
-        printf("\n\n");
+
+        // printf( "--- TECSInfo ---\n" );
+        // print_cell_by_path( p_cellcb, VAR_cell_path , &flag );
+
+        // if( flag ){
+        //     // printf( "Eroor: Cell \"%s\" cannot found\n", VAR_cell_path );
+        //     return;
+        // }else if( isNull(VAR_entry_path) ){
+        //     // printf( "Error: Entry \"%s\" cannot found\n", VAR_entry_path_tmp );
+        //     return;
+        // }else if( isNull(VAR_function_path) ){
+        //     // printf( "Error: Function \"%s\" cannot found\n", VAR_function_path_tmp );
+        //     return;
+        // }
+        // // printf( "- Celltype: \"%s\"\n", VAR_celltype_path );
+        // // printf( "- Signature: \"%s\"\n", VAR_signature_path );
+        // // printf( "- # of arg: %d\n", VAR_arg_num );
+
+        // for( i = 0; i < VAR_arg_num; i++ ){
+        //     // printf( "  %d %s %s\n", i+1, VAR_arg_type[i], VAR_arg[i] );
+        //     strcpy( arguments[i].type, VAR_arg_type[i] );
+        // }
+        // strcpy( exp_val.type, VAR_exp_type );
+        // // printf( "- Return Type: %s\n", exp_val.type );
+        // // argumentsにはtypeのみがTECSInfoにより入っている状態。
+        // ercd = cJSMN_json_parse_arg( arguments, &exp_val, &arg_num, j, ATTR_NAME_LEN );
+        // if( ercd == -1 ) return; /* jsmnエラー */
+
+        // if( arg_num != VAR_arg_num ){
+        //     // printf( "Error: Wrong number of arguments\n" );
+        //     // printf( "You expected %d arguments. Function \"%s\" has %d arguments\n",
+        //         arg_num, VAR_function_path, VAR_arg_num );
+        // }
+        // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, arguments, &exp_val );
+        // printf("\n\n");
         if( ercd == 2 ){
             printf( "All targets are checked\n" );
             return;
@@ -281,13 +331,13 @@ eBody_main(CELLIDX idx)
     }
 
     if( j > ATTR_TARGET_NUM ){
-        printf( "Error: Too many targets or keyword is wrong.\n" );
-        printf( "Keyword is \"target#\" and keep the target number 1 ~ %d\n", ATTR_TARGET_NUM );
+        // printf( "Error: Too many targets or keyword is wrong.\n" );
+        // printf( "Keyword is \"target#\" and keep the target number 1 ~ %d\n", ATTR_TARGET_NUM );
     }
 }
 
 /* #[<POSTAMBLE>]#
- *   これより下に非受け口関数を書きます
+ *   ?????겼????????ؿ?????ޤ?
  * #[</POSTAMBLE>]#*/
 
 static void
