@@ -1,0 +1,108 @@
+/*
+ * このファイルは tecsgen によりテンプレートとして自動生成されました
+ * このファイルを編集して使用することが意図されていますが
+ * tecsgen の再実行により上書きされてしまうため、通常
+ *   gen/tTaskMain_templ.c => src/tTaskMain.c
+ * のように名前, フォルダを変更してから修正します
+ */
+/* #[<PREAMBLE>]#
+ * #[<...>]# から #[</...>]# で囲まれたコメントは編集しないでください
+ * tecsmerge によるマージに使用されます
+ *
+ * 呼び口関数 #_TCPF_#
+ * call port: cFatFile signature: sFatFile context:task
+ *   FRESULT        cFatFile_fopen( const TCHAR* path, const TCHAR* mode );
+ *   FRESULT        cFatFile_fclose( );
+ *   FRESULT        cFatFile_fread( TCHAR* buffer, UINT btr );
+ *   FRESULT        cFatFile_fwrite( const TCHAR* buffer, UINT btw, UINT* bw );
+ *   FRESULT        cFatFile_unlink( const TCHAR* path );
+ * call port: cLCD signature: sLCD context:task
+ *   ER             cLCD_setFont( lcdfont_t font );
+ *   ER             cLCD_getFontSize( lcdfont_t font, int32_t* p_width, int32_t* p_height );
+ *   ER             cLCD_drawString( const char* str, int32_t x, int32_t y );
+ *   ER             cLCD_fillRect( int32_t x, int32_t y, int32_t w, int32_t h, lcdcolor_t color );
+ *   ER             cLCD_drawLine( int32_t x0, int32_t y0, int32_t x1, int32_t y1 );
+ *   void           cLCD_print( const char* str );
+ *   void           cLCD_puts( const char* str );
+ *   void           cLCD_clear( );
+ *   void           cLCD_showMessageBox( const char* title, const char* msg );
+ * call port: cButton signature: sButton context:task
+ *   bool_t         cButton_isPressed( button_t button );
+ *
+ * #[</PREAMBLE>]# */
+
+/* プロトタイプ宣言や変数の定義をここに書きます #_PAC_# */
+#include "tTaskMain_tecsgen.h"
+
+#ifndef E_OK
+#define	E_OK	0		/* success */
+#define	E_ID	(-18)	/* illegal ID */
+#endif
+
+/* 受け口関数 #_TEPF_# */
+/* #[<ENTRY_PORT>]# eBody
+ * entry port: eBody
+ * signature:  sTaskBody
+ * context:    task
+ * #[</ENTRY_PORT>]# */
+
+/* #[<ENTRY_FUNC>]# eBody_main
+ * name:         eBody_main
+ * global_name:  tTaskMain_eBody_main
+ * oneway:       false
+ * #[</ENTRY_FUNC>]# */
+void
+eBody_main(CELLIDX idx)
+{
+	CELLCB	*p_cellcb;
+	if (VALID_IDX(idx)) {
+		p_cellcb = GET_CELLCB(idx);
+	}
+	else {
+		/* エラー処理コードをここに記述します */
+	} /* end if VALID_IDX(idx) */
+
+	/* ここに処理本体を記述します #_TEFB_# */
+  char_t buf[10];
+  FRESULT res;
+
+  cLCD_setFont( EV3_FONT_MEDIUM );
+  cLCD_drawString( "JSON_OPEN", 1, 0 );
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  res = cFatFile_fopen("json/target.txt","r");
+  if( res == FR_OK ){
+    cLCD_drawString( "FR_OK", 1, 0 );
+    while(1){
+        if( cButton_isPressed( ENTER_BUTTON ) ){
+            cLCD_clear();
+            break;
+        }
+    }
+  }else{
+    cLCD_drawString( "FR_NG", 1, 0 );
+    while(1){
+        if( cButton_isPressed( ENTER_BUTTON ) ){
+            cLCD_clear();
+            return;
+        }
+    }
+  }
+  cFatFile_fread( buf, 10 );
+  cLCD_drawString( buf, 1, 0 );
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  cFatFile_fclose();
+}
+
+/* #[<POSTAMBLE>]#
+ *   これより下に非受け口関数を書きます
+ * #[</POSTAMBLE>]#*/
