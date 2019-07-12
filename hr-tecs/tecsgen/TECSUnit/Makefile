@@ -77,7 +77,7 @@ $(TARGET) : $(TIMESTAMP) $(CELLTYPE_COBJS) $(TECSGEN_COBJS) $(PLUGIN_COBJS) $(OT
 	$(LD) -o $(TARGET) $(TECSGEN_COBJS) $(CELLTYPE_COBJS) $(PLUGIN_COBJS) $(OTHER_OBJS) $(LDFLAGS)
 
 $(OTHER_OBJS): $(JSMN_DIR)/jsmn.o
-	$(AR) rc $@ $^
+	ar rc $@ $^
 
 jsmn.o: $(JSMN_DIR)/jsmn.c $(JSMN_DIR)/jsmn.h
 	$(CC) -c $(CFLAGS) $< -o $@

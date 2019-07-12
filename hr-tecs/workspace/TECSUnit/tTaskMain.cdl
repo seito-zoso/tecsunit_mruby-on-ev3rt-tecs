@@ -1,6 +1,6 @@
 celltype tTaskMain {
     entry sTaskBody            eBody;
-    call  sTECSUnit            cUnit;
+    // call  sTECSUnit            cUnit;
     call  sJSMN                cJSMN;
 
     /* EV3RT+TECS */
@@ -9,27 +9,27 @@ celltype tTaskMain {
     call sButton cButton;
 
     /* TECSInfo */
-    call  nTECSInfo::sTECSInfo cTECSInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sNamespaceInfo cNSInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sRegionInfo    cRegionInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sCellInfo      cCellInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sSignatureInfo cSignatureInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sCelltypeInfo  cCelltypeInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sVarDeclInfo   cVarDeclInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sTypeInfo      cTypeInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sFunctionInfo  cFunctionInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sParamInfo     cParamInfo;
-    [dynamic,optional]
-        call  nTECSInfo::sEntryInfo     cEntryInfo;
+    // call  nTECSInfo::sTECSInfo cTECSInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sNamespaceInfo cNSInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sRegionInfo    cRegionInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sCellInfo      cCellInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sSignatureInfo cSignatureInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sCelltypeInfo  cCelltypeInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sVarDeclInfo   cVarDeclInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sTypeInfo      cTypeInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sFunctionInfo  cFunctionInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sParamInfo     cParamInfo;
+    // [dynamic,optional]
+    //     call  nTECSInfo::sEntryInfo     cEntryInfo;
 
     attr{
         int16_t NAME_LEN = 128;
@@ -74,13 +74,12 @@ region rDomainEV3{
         cBody         = TaskMain.eBody;
     };
     cell tTaskMain TaskMain {
-        cTECSInfo  = TECSInfo.eTECSInfo;
-        cUnit = TECSUnit.eUnit;
+        // cTECSInfo  = TECSInfo.eTECSInfo;
+        // cUnit = TECSUnit.eUnit;
+        cJSMN = JSMN.eJSMN;
 
         cKernel = HRP2Kernel.eKernel;
         cButton = Button.eButton;
         cLCD = LCD.eLCD;
-        // この結合は TECSUnitPlugin により自動生成される
-        cJSMN = JSMN.eJSMN;
     };
 };

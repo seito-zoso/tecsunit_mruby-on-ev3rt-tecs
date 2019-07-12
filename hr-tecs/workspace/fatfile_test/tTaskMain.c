@@ -86,7 +86,7 @@ eBody_main(CELLIDX idx)
 	} /* end if VALID_IDX(idx) */
 
 	/* ¤³¤³¤Ë½èÍýËÜÂÎ¤òµ­½Ò¤·¤Þ¤¹ #_TEFB_# */
-  char_t buf[10];
+  char_t buf[32];
   FRESULT res, res2;
   FIL fs;
   FATFS fatfs;
@@ -104,8 +104,8 @@ eBody_main(CELLIDX idx)
       }
   }
   cKernel_delay( 1000 );
-  // res = f_open( &fs, "json/target.txt", FA_READ | FA_OPEN_EXISTING );
-  res = cFatFile_fopen("json/target.txt","r");
+  // res = f_open( &fs, "json/target.json", FA_READ | FA_OPEN_EXISTING );
+  res = cFatFile_fopen("json/target.json","r");
   if( res == FR_OK ){
     cLCD_drawString( "FR_OK", 1, 0 );
   }else{
@@ -120,7 +120,7 @@ eBody_main(CELLIDX idx)
   cKernel_delay( 1000 );
 
   i = 0;
-  while( cFatFile_fgets( buf, 10 ) != NULL ){
+  while( cFatFile_fgets( buf, 32 ) != NULL ){
     cLCD_drawString( buf, 1, i );
     while(1){
       if( cButton_isPressed( ENTER_BUTTON ) ){

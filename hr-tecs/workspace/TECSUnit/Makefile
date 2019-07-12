@@ -294,7 +294,7 @@ CFLAGS = $(COPTS) $(CDEFS) $(INCLUDES)
 #  アプリケーションプログラムに関する定義
 #
 APPLNAME = tEV3Sample
-APPLDIR = .
+APPLDIR = ../TECSUnit
 APPL_CFG = $(APPLNAME).cfg
 ifeq ($(RUNNING_BODY_TIRE),big)
     APPL_CDL = $(APPLNAME)_bigtire.cdl
@@ -559,8 +559,8 @@ banner.o: kernel_cfg.timestamp $(filter-out banner.o,$(ALL2_OBJS)) $(LIBS_DEP)
 #
 #  全体のリンク
 #
-$(OBJFILE): $(APPL_CFG) kernel_cfg.timestamp $(ALL_OBJS) $(LIBS_DEP) $(JSMN_OBJ)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(OBJFILE) $(START_OBJS) $(JSMN_OBJ) \
+$(OBJFILE): $(APPL_CFG) kernel_cfg.timestamp $(ALL_OBJS) $(LIBS_DEP)
+	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(OBJFILE) $(START_OBJS) \
 			$(APPL_OBJS) $(MRUBY_LIB) $(SYSSVC_OBJS) $(CFG_OBJS) $(ALL_LIBS) $(END_OBJS)
 	$(NM) -n $(OBJFILE) > $(OBJNAME).syms
 ifdef USE_CFG_PASS3

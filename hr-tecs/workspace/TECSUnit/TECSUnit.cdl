@@ -1,37 +1,45 @@
-// import( <cygwin_kernel.cdl> );
 import( <EV3_common.cdl> );
 
-import( <TECSInfo.cdl> );
-import( <TECSInfoAccessor.cdl> );
+/* 07/09:TECSinfoをincludeするとうまくいかない（起動しない）
+    tecsgenのバージョンを前のに戻しても（mruby2.2.0で実装）syslog.hのエラー
+*/
+// import( <TECSInfo.cdl> );
+// import( <TECSInfoAccessor.cdl> );
 /* ターゲットのインクルード */
 import( <target.cdl> );
 
 import( <jsmn.cdl> );
+import( <tFatFile.cdl> );
+// signature sTECSUnit {
+//   void main( [in,string] const char_t *cell_path,
+//              [in,string] const char_t *entry_path,
+//              [in,string] const char_t *signature_path,
+//              [in,string] const char_t *function_path,
+//              [in] const struct tecsunit_obj *arguments,
+//              [in] const struct tecsunit_obj *exp_val );
+// };
 
-signature sTECSUnit {
-  void main( [in,string] const char_t *cell_path,
-             [in,string] const char_t *entry_path,
-             [in,string] const char_t *signature_path,
-             [in,string] const char_t *function_path,
-             [in] const struct tecsunit_obj *arguments,
-             [in] const struct tecsunit_obj *exp_val );
-};
+import( "tTaskMain.cdl" );
 
-import( <tTaskMain.cdl> );
-
-generate( TECSUnitPlugin, rDomainEV3::TaskMain, "" );
+// generate( TECSUnitPlugin, rDomainEV3::TaskMain, "" );
 generate( JSMNPlugin, rDomainEV3::TaskMain, "" );
 
 region rDomainEV3{
 
-    cell tTECSUnit TECSUnit {
-        cTECSInfo  = TECSInfo.eTECSInfo;
-    };
+//     // cell tTECSUnit TECSUnit {
+//     //     cTECSInfo  = TECSInfo.eTECSInfo;
+//     // };
+
+    cell tFatFile FatFile{};
     cell tJSMN JSMN {
+      cLCD = LCD.eLCD;
+      cButton = Button.eButton;
+      cKernel = HRP2Kernel.eKernel;
+      cFatFile = FatFile.eFatFile;
     };
-/******* TECSInfo cell *******/
-    cell nTECSInfo::tTECSInfo TECSInfo {
-        // cTECSInfo = rTECSInfo::TECSInfoSub.eTECSInfo;
-        //  この結合は TECSInfoPlugin により生成されるので結合不要
-    };
+/****** TECSInfo cell ******/
+    // cell nTECSInfo::tTECSInfo TECSInfo {
+    //     // cTECSInfo = rTECSInfo::TECSInfoSub.eTECSInfo;
+    //     //  この結合は TECSInfoPlugin により生成されるので結合不要
+    // };
 };
