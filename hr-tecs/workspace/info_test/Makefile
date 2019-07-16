@@ -54,7 +54,7 @@ endef
 all:
 
 # SDのドライブ文字を指定
-SD_DIR = /cygdrive/e/
+SD_DIR = /cygdrive/d/
 
 #
 #  ターゲット略称の定義
@@ -65,8 +65,8 @@ MRUBY_DIR = ../mruby_app
 # RUNNING_BODY = ev3way
  RUNNING_BODY = etrobo
 
-# RUNNING_BODY_TIRE = normal
- RUNNING_BODY_TIRE = big
+RUNNING_BODY_TIRE = normal
+#  RUNNING_BODY_TIRE = big
 
 #  mrubyのアプリケーションファイル名
 # APP_NAME = battery_sample.rb
