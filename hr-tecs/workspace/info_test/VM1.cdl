@@ -1,5 +1,6 @@
 import("EV3_common.cdl");
 import("TECSInfo.cdl");
+import("target.cdl");
 //[domain(HRP2, "trusted")]
 //[domain(HRP2, "nontrusted")]
 celltype tTaskMain {
@@ -32,16 +33,49 @@ celltype tTaskMain {
   [dynamic,optional]
       call  nTECSInfo::sEntryInfo     cEntryInfo;
 
+  attr{
+      uint8_t NAME_LEN = 128;
+      uint8_t ARG_NAME_LEN = 128;
+      uint8_t ARG_DIM = 32;
+      uint8_t TARGET_NUM = 100;
+  };
+  var{
+      [size_is(NAME_LEN)]
+          char_t  *cell_path;
+      [size_is(NAME_LEN)]
+          char_t  *celltype_path;
+      // [size_is(NAME_LEN)]
+      //     char_t  *entry_path;
+      // [size_is(NAME_LEN)]
+      //     char_t  *entry_path_tmp;
+      // [size_is(NAME_LEN)]
+      //     char_t  *signature_path;
+      // [size_is(NAME_LEN)]
+      //     char_t  *function_path;
+      // [size_is(NAME_LEN)]
+      //     char_t  *function_path_tmp;
+      // int8_t arg_num;
+      // [size_is(NAME_LEN)]
+      //     char_t *exp_type;
+      // char_t  arg[32][128];
+      // char_t  arg_type[32][128];
+      // int8_t find_entry;
+      // int8_t find_func;
+  };
 };
 
 region rDomainEV3 {
+  cell nTECSInfo::tTECSInfo TECSInfo {
+      // cTECSInfo = rTECSInfo::TECSInfoSub.eTECSInfo;
+      //  この結合は TECSInfoPlugin により生成されるので結合不要
+  };
 
 	cell tTaskMain TaskMain {
-		cTECSinfo = TECSInfo.eTECSInfo;
+		cTECSInfo = TECSInfo.eTECSInfo;
 
     cKernel = HRP2Kernel.eKernel;
     cButton = Button.eButton;
-    cLCD = LCD.eLCD;
+    cLCD = 		LCD.eLCD;
 	};
 
 	cell tTask Task {

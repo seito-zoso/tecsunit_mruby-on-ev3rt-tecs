@@ -276,7 +276,8 @@ INCLUDES := -I. -I./gen -I$(SRCDIR)/tecs_kernel \
 			-I$(TECSGEN_DIR)/tecs/mruby \
 			-I$(TECSGEN_DIR)/tecs/TLSFMalloc \
             -I$(TECSGEN_DIR)/tecs/posix $(INCLUDES) \
-      -I$(SRCDIR)/target/ev3_gcc/drivers/fatfs/ff10b/src
+      -I$(SRCDIR)/target/ev3_gcc/drivers/fatfs/ff10b/src \
+      -I$(TECSGEN_DIR)/tecs/TECSInfo
 
 
 LDFLAGS := $(LDFLAGS) -L $(MRUBY_SRC_DIR)/build/ARM/lib/
@@ -290,7 +291,7 @@ CFLAGS = $(COPTS) $(CDEFS) $(INCLUDES)
 #  アプリケーションプログラムに関する定義
 #
 APPLNAME = tEV3Sample
-APPLDIR = ../sd
+APPLDIR = ../info_test
 APPL_CFG = $(APPLNAME).cfg
 ifeq ($(RUNNING_BODY_TIRE),big)
     APPL_CDL = $(APPLNAME)_bigtire.cdl
@@ -387,7 +388,8 @@ endif
 #
 INCLUDES += $(foreach dir,$(shell find $(APPLDIR) -type d -name include),-I$(dir))
 APPL_DIR += $(foreach dir,$(shell find $(APPLDIR) -type d -name src),$(dir))
-vpath %.c ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR) $(SRCDIR)/tecs_lib/mindstorms_ev3 $(SRCDIR)/tecs_lib/common $(SRCDIR)/tecsgen/tecsgen/tecs/mruby
+vpath %.c ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR) $(SRCDIR)/tecs_lib/mindstorms_ev3 $(SRCDIR)/tecs_lib/common $(SRCDIR)/tecsgen/tecsgen/tecs/mruby $(TECSGEN_DIR)/tecs/TECSInfo
+
 vpath %.cpp /gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.S ./gen $(KERNEL_DIR) $(SYSSVC_DIR) $(APPL_DIR)
 vpath %.cfg ./gen $(APPL_DIR)
