@@ -41,6 +41,8 @@ celltype tTaskMain {
     };
     var{
         [size_is(NAME_LEN)]
+            char_t  *target_path;
+        [size_is(NAME_LEN)]
             char_t  *cell_path;
         [size_is(NAME_LEN)]
             char_t  *region_path;

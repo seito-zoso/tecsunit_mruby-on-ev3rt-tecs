@@ -203,28 +203,21 @@
 #endif
 
 static void
-print_cell_by_path( CELLCB *p_cellcb, char_t *path );
+print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag );
 static void
 print_cell( CELLCB *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc );
 static void
+print_signature( CELLCB *p_cellcb, Descriptor( nTECSInfo_sSignatureInfo )  signatureDesc );
+static void
+print_function( CELLCB *p_cellcb, Descriptor( nTECSInfo_sFunctionInfo ) functionDesc );
+static void
+print_param( CELLCB *p_cellcb, Descriptor( nTECSInfo_sParamInfo ) paramDesc, int num );
+static void
 print_celltype( CELLCB   *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc );
-
-// static void
-// print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag );
-// static void
-// print_cell( CELLCB *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc );
-// static void
-// print_signature( CELLCB *p_cellcb, Descriptor( nTECSInfo_sSignatureInfo )  signatureDesc );
-// static void
-// print_function( CELLCB *p_cellcb, Descriptor( nTECSInfo_sFunctionInfo ) functionDesc );
-// static void
-// print_param( CELLCB *p_cellcb, Descriptor( nTECSInfo_sParamInfo ) paramDesc, int num );
-// static void
-// print_celltype( CELLCB   *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc );
-// static void
-// print_entry(CELLCB  *p_cellcb, Descriptor( nTECSInfo_sEntryInfo )  Edesc );
-// int
-// isNull( const char *str );
+static void
+print_entry(CELLCB  *p_cellcb, Descriptor( nTECSInfo_sEntryInfo )  Edesc );
+int
+isNull( const char *str );
 /* 受け口関数 #_TEPF_# */
 /* #[<ENTRY_PORT>]# eBody
  * entry port: eBody
@@ -256,27 +249,9 @@ eBody_main(CELLIDX idx)
     // struct tecsunit_obj arguments[ATTR_ARG_DIM];
     // struct tecsunit_obj exp_val;
     // int i, j, arg_num, flag = 0;
-    int8_t j;
-
-    cLCD_setFont( EV3_FONT_MEDIUM );
-    cLCD_drawString( "JSON_OPEN", 1, 0 );
-    while(1){
-        if( cButton_isPressed( ENTER_BUTTON ) ){
-            cLCD_clear();
-            break;
-        }
-    }
-    cKernel_delay( 1000 );
+    int8_t i, j, flag = 0;
 
     ercd = cJSMN_json_open();
-    cLCD_drawString( "OPENED", 1, 0 );
-    while(1){
-        if( cButton_isPressed( ENTER_BUTTON ) ){
-            cLCD_clear();
-            break;
-        }
-    }
-    cKernel_delay( 1000 );
 
     if( ercd != 0 ){
         cLCD_drawString( "Failed to OPEN", 1, 0 );
@@ -285,17 +260,8 @@ eBody_main(CELLIDX idx)
                 return;
             }
         }
-        cKernel_delay( 1000 );
+        cKernel_delay( 500 );
     }
-
-    cLCD_drawString( "JSON_PARSE", 1, 0 );
-    while(1){
-        if( cButton_isPressed( ENTER_BUTTON ) ){
-            cLCD_clear();
-            break;
-        }
-    }
-    cKernel_delay( 1000 );
 
     for( j = 1; j < ATTR_TARGET_NUM + 1 ; j++ ) {
         /* 初期化 */
@@ -316,71 +282,88 @@ eBody_main(CELLIDX idx)
             }
         }  /* jsmnエラー */
 
-
-        // cLCD_drawString( itoa(j), 0, 7 );
-        cLCD_drawString( "- Region:", 0, 0 );
-        cLCD_drawString( VAR_region_path, 10, 0 );
-        cLCD_drawString( "- Cell:", 0, 1 );
-        cLCD_drawString( VAR_cell_path, 8, 1 );
-        cLCD_drawString( "- Entry:", 0, 2 );
-        cLCD_drawString( VAR_entry_path_tmp, 9, 2 );
-        cLCD_drawString( "- Func:", 0, 3 );
-        cLCD_drawString( VAR_function_path_tmp, 8, 3 );
-        cLCD_drawString( " >> Press Enter", 0, 5 );
+        sprintf( VAR_target_path, "Target%d", j );
+        cLCD_drawString( VAR_target_path, 0, 0 );
+        cLCD_drawString( "- Region:", 0, 1 );
+        cLCD_drawString( VAR_region_path, 10, 1 );
+        cLCD_drawString( "- Cell:", 0, 2 );
+        cLCD_drawString( VAR_cell_path, 10, 2 );
+        cLCD_drawString( "- Entry:", 0, 3 );
+        cLCD_drawString( VAR_entry_path_tmp, 10, 3 );
+        cLCD_drawString( "- Func:", 0, 4 );
+        cLCD_drawString( VAR_function_path_tmp, 10, 4 );
+        cLCD_drawString( " >> Press Enter", 0, 6 );
         while(1){
             if( cButton_isPressed( ENTER_BUTTON ) ){
                 cLCD_clear();
                 break;
             }
         }
-        cKernel_delay( 1000 );
+        cKernel_delay( 500 );
 
-        strcat( VAR_region_cell_path, VAR_region_path );
-        strcat( VAR_region_cell_path, "::" );
-        strcat( VAR_region_cell_path, VAR_cell_path );
+        sprintf( VAR_region_cell_path, "%s::%s", VAR_region_path, VAR_cell_path );
 
-        cLCD_setFont( EV3_FONT_SMALL );
-        cLCD_drawString( VAR_region_cell_path, 0, 1 );
+        print_cell_by_path( p_cellcb, VAR_region_cell_path , &flag );
+
+        if( flag ){
+            cLCD_drawString( "Eroor: Cell cannot found", 0, 0 );
+            cLCD_drawString( VAR_cell_path, 0, 1 );
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+            return;
+        }else if( isNull(VAR_entry_path) ){
+            cLCD_drawString( "Eroor: Entry cannot found", 0, 0 );
+            cLCD_drawString( VAR_entry_path_tmp, 0, 1 );
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+            return;
+        }else if( isNull(VAR_function_path) ){
+            cLCD_drawString( "Eroor: function cannot found", 0, 0 );
+            cLCD_drawString( VAR_function_path_tmp, 0, 1 );
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+            return;
+        }
+        cLCD_setFont(EV3_FONT_SMALL);
+        cLCD_drawString( VAR_target_path, 0, 0 );
+        cLCD_drawString( "- Celltype:", 0, 1 );
+        cLCD_drawString( VAR_celltype_path, 15, 1 );
+        cLCD_drawString( "- Signature:", 0, 2 );
+        cLCD_drawString( VAR_signature_path, 15, 2 );
+        cLCD_drawString( "- Arg:", 0, 3 );
+        for( i = 0; i < VAR_arg_num; i++ ){
+            cLCD_drawString( VAR_arg_type[i], 15, 3 + i );
+            strcpy( VAR_arg_struct[i].type, VAR_arg_type[i] );
+        }
+        strcpy( VAR_exp_struct.type, VAR_exp_type );
+        cLCD_drawString( "- Return Type:", 0, 3 + i );
+        cLCD_drawString( VAR_exp_type, 15, 3 + i );
+
+        cLCD_drawString( " >> Press Enter", 0, 5 + i );
         while(1){
             if( cButton_isPressed( ENTER_BUTTON ) ){
                 cLCD_clear();
                 break;
             }
         }
-        cKernel_delay( 1000 );
-        cLCD_setFont( EV3_FONT_MEDIUM );
+        cKernel_delay( 500 );
 
-        print_cell_by_path( p_cellcb, VAR_region_cell_path );
-        cLCD_drawString( VAR_celltype_path, 3, 0 );
-        while(1){
-            if( cButton_isPressed( ENTER_BUTTON ) ){
-                cLCD_clear();
-                break;
-            }
-        }
-        cKernel_delay( 1000 );
-        // printf( "--- TECSInfo ---\n" );
-        // print_cell_by_path( p_cellcb, VAR_cell_path , &flag );
 
-        // if( flag ){
-        //     // printf( "Eroor: Cell \"%s\" cannot found\n", VAR_cell_path );
-        //     return;
-        // }else if( isNull(VAR_entry_path) ){
-        //     // printf( "Error: Entry \"%s\" cannot found\n", VAR_entry_path_tmp );
-        //     return;
-        // }else if( isNull(VAR_function_path) ){
-        //     // printf( "Error: Function \"%s\" cannot found\n", VAR_function_path_tmp );
-        //     return;
-        // }
-        // // printf( "- Celltype: \"%s\"\n", VAR_celltype_path );
-        // // printf( "- Signature: \"%s\"\n", VAR_signature_path );
-        // // printf( "- # of arg: %d\n", VAR_arg_num );
-
-        // for( i = 0; i < VAR_arg_num; i++ ){
-        //     // printf( "  %d %s %s\n", i+1, VAR_arg_type[i], VAR_arg[i] );
-        //     strcpy( VAR_arg_struct[i].type, VAR_arg_type[i] );
-        // }
-        // strcpy( VAR_exp_struct.type, VAR_exp_type );
         // // printf( "- Return Type: %s\n", VAR_exp_struct.type );
         // // VAR_arg_struct
         // ercd = cJSMN_json_parse_arg( VAR_arg_struct, &VAR_exp_struct, &arg_num, j, ATTR_NAME_LEN );
@@ -409,32 +392,28 @@ eBody_main(CELLIDX idx)
  *   ?????겼????????ؿ?????ޤ?
  * #[</POSTAMBLE>]#*/
 static void
-print_cell_by_path( CELLCB *p_cellcb, char_t *path ){
+print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag )
+{
+    Descriptor( nTECSInfo_sCellInfo )  desc;
+    ER    ercd;
 
-  Descriptor( nTECSInfo_sCellInfo )  desc;
-  ER    ercd;
-
-  ercd = cTECSInfo_findCell( path, &desc );
-  if( ercd == E_OK ){
-      print_cell( p_cellcb, desc );
-  }
-  else{
-    cLCD_drawString( "Cannnot find!", 1, 0 );
-    while(1){
-      if( cButton_isPressed( ENTER_BUTTON ) ){
-          cLCD_clear();
-          break;
-      }
+    ercd = cTECSInfo_findCell( path, &desc );
+    if( ercd == E_OK ){
+        print_cell( p_cellcb, desc );
     }
-    cKernel_delay( 1000 );
-  }
+    else{
+        *flag = 1;
+    }
 }
+
 static void
 print_cell( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc )
 {
     Descriptor( nTECSInfo_sCelltypeInfo ) CTdesc;
+    void  *cbp, *inibp;
 
     cCellInfo_set_descriptor( CELLdesc );
+
     cCellInfo_getCelltypeInfo( &CTdesc );
 
     /* celltype info */
@@ -444,156 +423,117 @@ print_cell( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc )
 static void
 print_celltype( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc )
 {
-  // char_t buf[8];
-  cCelltypeInfo_set_descriptor( CTdesc );
-  cCelltypeInfo_getName( VAR_celltype_path, 8 );
+
+    Descriptor( nTECSInfo_sEntryInfo ) entryDesc;
+    int i, n;
+    cCelltypeInfo_set_descriptor( CTdesc );
+    cCelltypeInfo_getName( VAR_celltype_path, ATTR_NAME_LEN );
+    n = cCelltypeInfo_getNEntry();
+
+    for( i = 0; i < n; i++ ){
+      if( VAR_find_entry ){
+        break;
+      }
+      cCelltypeInfo_getEntryInfo( i, &entryDesc);
+      print_entry( p_cellcb, entryDesc );
+    }
+}
+
+static void
+print_entry(CELLCB  *p_cellcb, Descriptor( nTECSInfo_sEntryInfo )  Edesc )
+{
+    Descriptor( nTECSInfo_sSignatureInfo ) sigDesc;
+    cEntryInfo_set_descriptor( Edesc );
+    cEntryInfo_getName(VAR_entry_path, ATTR_NAME_LEN);
+    if( !strcmp(VAR_entry_path, VAR_entry_path_tmp ) ){
+      // sprintf( VAR_entry_path, "%s.%s", VAR_cell_path, VAR_entry_path_tmp );
+      VAR_find_entry = 1;
+      cEntryInfo_getSignatureInfo( &sigDesc );
+      print_signature( p_cellcb, sigDesc );
+    }else{
+      strcpy( VAR_entry_path, "" );
+    }
+}
+
+static void
+print_signature( CELLCB *p_cellcb, Descriptor( nTECSInfo_sSignatureInfo )  signatureDesc )
+{
+    int n, i;
+    Descriptor( nTECSInfo_sFunctionInfo )  functionDesc;
+    /* signatureInfoセルに動的結合 */
+    cSignatureInfo_set_descriptor( signatureDesc );
+    cSignatureInfo_getName( VAR_signature_path, ATTR_NAME_LEN );
+    n = cSignatureInfo_getNFunction();
+    for(i = 0; i < n; i++){
+        if( VAR_find_func ){
+            break;
+        }
+        cSignatureInfo_getFunctionInfo(i, &functionDesc);
+        print_function( p_cellcb, functionDesc );
+    }
+}
+
+static void
+print_function( CELLCB *p_cellcb, Descriptor( nTECSInfo_sFunctionInfo ) functionDesc )
+{
+    int i;
+    Descriptor( nTECSInfo_sParamInfo ) paramInfo;
+    Descriptor( nTECSInfo_sTypeInfo ) typeInfo;
+
+    cFunctionInfo_set_descriptor( functionDesc );
+    cFunctionInfo_getName( VAR_function_path, ATTR_NAME_LEN );
+
+    if( !strcmp( VAR_function_path, VAR_function_path_tmp ) ){
+      VAR_find_func = 1;
+      VAR_arg_num = cFunctionInfo_getNParam();
+      cFunctionInfo_getReturnTypeInfo( &typeInfo );
+      cTypeInfo_set_descriptor( typeInfo );
+      cTypeInfo_getName( VAR_exp_type, ATTR_ARG_NAME_LEN );
+      for(i = 0; i < VAR_arg_num; i++){
+          cFunctionInfo_getParamInfo(i, &paramInfo);
+          print_param( p_cellcb, paramInfo, i );
+      }
+    }else{
+      strcpy( VAR_function_path, "" );
+      return;
+    }
+}
+
+static void
+print_param( CELLCB *p_cellcb, Descriptor( nTECSInfo_sParamInfo ) paramDesc, int num )
+{
+    int n, i;
+    char_t tmp[8];
+    Descriptor( nTECSInfo_sTypeInfo ) typeInfo;
+    Descriptor( nTECSInfo_sVarDeclInfo ) memberInfo;
+
+    cParamInfo_set_descriptor( paramDesc );
+    cParamInfo_getName( VAR_arg[num], ATTR_ARG_NAME_LEN );
+    cParamInfo_getTypeInfo( &typeInfo );
+    cTypeInfo_set_descriptor( typeInfo );
+    cTypeInfo_getName( VAR_arg_type[num], ATTR_ARG_NAME_LEN );
+
+    // TODO
+    // if( strstr( VAR_arg_type[num], "struct") != NULL ){
+    //     // n = 0;
+    //     n = cTypeInfo_getNMember();
+    //     printf("%d\n",n);
+
+    //     // for(i = 0; i < n; i++){
+    //     //     cTypeInfo_getMemberInfo( i, &memberInfo );
+    //     //     cVarDeclInfo_set_descriptor( memberInfo );
+    //     //     cVarDeclInfo_getName( tmp, 8 );
+    //     //     printf("%s\n",tmp);
+    //     // }
+    // }
 
 }
-// static void
-// print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag )
-// {
-//     Descriptor( nTECSInfo_sCellInfo )  desc;
-//     ER    ercd;
 
-//     ercd = cTECSInfo_findCell( path, &desc );
-//     if( ercd == E_OK ){
-//         print_cell( p_cellcb, desc );
-//     }
-//     else{
-//         *flag = 1;
-//     }
-// }
-
-// static void
-// print_cell( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc )
-// {
-//     Descriptor( nTECSInfo_sCelltypeInfo ) CTdesc;
-//     void  *cbp, *inibp;
-
-//     cCellInfo_set_descriptor( CELLdesc );
-
-//     cCellInfo_getCelltypeInfo( &CTdesc );
-
-//     /* celltype info */
-//     print_celltype( p_cellcb, CTdesc );
-// }
-
-// static void
-// print_celltype( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc )
-// {
-
-//     Descriptor( nTECSInfo_sEntryInfo ) entryDesc;
-//     int i, n;
-//     cCelltypeInfo_set_descriptor( CTdesc );
-//     cCelltypeInfo_getName( VAR_celltype_path, ATTR_NAME_LEN );
-//     n = cCelltypeInfo_getNEntry();
-
-//     for( i = 0; i < n; i++ ){
-//       if( VAR_find_entry ){
-//         break;
-//       }
-//       cCelltypeInfo_getEntryInfo( i, &entryDesc);
-//       print_entry( p_cellcb, entryDesc );
-//     }
-// }
-
-// static void
-// print_entry(CELLCB  *p_cellcb, Descriptor( nTECSInfo_sEntryInfo )  Edesc )
-// {
-//     Descriptor( nTECSInfo_sSignatureInfo ) sigDesc;
-//     cEntryInfo_set_descriptor( Edesc );
-//     cEntryInfo_getName(VAR_entry_path, ATTR_NAME_LEN);
-//     if( !strcmp(VAR_entry_path, VAR_entry_path_tmp ) ){
-//       // sprintf( VAR_entry_path, "%s.%s", VAR_cell_path, VAR_entry_path_tmp );
-//       VAR_find_entry = 1;
-//       cEntryInfo_getSignatureInfo( &sigDesc );
-//       print_signature( p_cellcb, sigDesc );
-//     }else{
-//       strcpy( VAR_entry_path, "" );
-//     }
-// }
-
-// static void
-// print_signature( CELLCB *p_cellcb, Descriptor( nTECSInfo_sSignatureInfo )  signatureDesc )
-// {
-//     int n, i;
-//     Descriptor( nTECSInfo_sFunctionInfo )  functionDesc;
-//     /* signatureInfoセルに動的結合 */
-//     cSignatureInfo_set_descriptor( signatureDesc );
-//     cSignatureInfo_getName( VAR_signature_path, ATTR_NAME_LEN );
-//     n = cSignatureInfo_getNFunction();
-//     for(i = 0; i < n; i++){
-//         if( VAR_find_func ){
-//             break;
-//         }
-//         cSignatureInfo_getFunctionInfo(i, &functionDesc);
-//         print_function( p_cellcb, functionDesc );
-//     }
-// }
-
-// static void
-// print_function( CELLCB *p_cellcb, Descriptor( nTECSInfo_sFunctionInfo ) functionDesc )
-// {
-//     int i;
-//     Descriptor( nTECSInfo_sParamInfo ) paramInfo;
-//     Descriptor( nTECSInfo_sTypeInfo ) typeInfo;
-
-//     cFunctionInfo_set_descriptor( functionDesc );
-//     cFunctionInfo_getName( VAR_function_path, ATTR_NAME_LEN );
-
-//     if( !strcmp( VAR_function_path, VAR_function_path_tmp ) ){
-//       VAR_find_func = 1;
-//       VAR_arg_num = cFunctionInfo_getNParam();
-//       cFunctionInfo_getReturnTypeInfo( &typeInfo );
-//       cTypeInfo_set_descriptor( typeInfo );
-//       cTypeInfo_getName( VAR_exp_type, ATTR_ARG_NAME_LEN );
-//       for(i = 0; i < VAR_arg_num; i++){
-//           cFunctionInfo_getParamInfo(i, &paramInfo);
-//           print_param( p_cellcb, paramInfo, i );
-//       }
-//     }else{
-//       strcpy( VAR_function_path, "" );
-//       return;
-//     }
-// }
-
-// static void
-// print_param( CELLCB *p_cellcb, Descriptor( nTECSInfo_sParamInfo ) paramDesc, int num )
-// {
-//     int n, i;
-//     char_t tmp[8];
-//     Descriptor( nTECSInfo_sTypeInfo ) typeInfo;
-//     Descriptor( nTECSInfo_sVarDeclInfo ) memberInfo;
-
-//     cParamInfo_set_descriptor( paramDesc );
-//     cParamInfo_getName( VAR_arg[num], ATTR_ARG_NAME_LEN );
-//     // printf("%s\n",VAR_arg[num]);
-//     cParamInfo_getTypeInfo( &typeInfo );
-//     cTypeInfo_set_descriptor( typeInfo );
-//     cTypeInfo_getName( VAR_arg_type[num], ATTR_ARG_NAME_LEN );
-//     // printf("%s\n",VAR_arg_type[num]);
-
-//     // TODO
-//     // if( strstr( VAR_arg_type[num], "struct") != NULL ){
-//     //     // n = 0;
-//     //     n = cTypeInfo_getNMember();
-//     //     printf("%d\n",n);
-
-//     //     // for(i = 0; i < n; i++){
-//     //     //     cTypeInfo_getMemberInfo( i, &memberInfo );
-//     //     //     cVarDeclInfo_set_descriptor( memberInfo );
-//     //     //     cVarDeclInfo_getName( tmp, 8 );
-//     //     //     printf("%s\n",tmp);
-//     //     // }
-//     // }
-
-// }
-
-// int
-// isNull( const char *str)
-// {
-//     if( str == NULL || !strlen(str) ){
-//       return true;
-//     }
-//     return false;
-// };
+int
+isNull( const char *str)
+{
+    if( str == NULL || !strlen(str) ){
+      return true;
+    }
+    return false;
+};
