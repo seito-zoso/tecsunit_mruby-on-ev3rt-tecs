@@ -71,6 +71,7 @@ celltype tJSMN {
     int16_t LEN = 1024; // jsonをまるごと読み込んだ時のサイズ
     int16_t TMP_LEN = 128; // argの値を一時的に格納
   /* json keywords：変更する場合はここを変える */
+    char_t *key_region = "region";
     char_t *key_cell = "cell";
     char_t *key_entry = "entry";
     char_t *key_function = "function";
@@ -199,7 +200,10 @@ ER    ercd = E_OK;
             }
             i = l + 2;
             for( k = 0; k < t[l+1].size; k++ ){
-                if( jsoneq( VAR_json_str, &t[i], ATTR_key_cell ) == 0 ){
+                if( jsoneq( VAR_json_str, &t[i], ATTR_key_region ) == 0 ){
+                    strcpy_n( r_path, t[i+1].end-t[i+1].start, VAR_json_str + t[i+1].start );
+                    i += 2;
+                }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_cell ) == 0 ){
                     strcpy_n( c_path, t[i+1].end-t[i+1].start, VAR_json_str + t[i+1].start );
                     i += 2;
                 }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_entry ) == 0 ){
@@ -351,7 +355,9 @@ p struct_mem_list
             }
             i = l + 2;
             for( k = 0; k < t[l+1].size; k++ ){
-                if( jsoneq( VAR_json_str, &t[i], ATTR_key_cell ) == 0 ){
+                if( jsoneq( VAR_json_str, &t[i], ATTR_key_region ) == 0 ){
+                    i += 2; /* ignore */
+                }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_cell ) == 0 ){
                     i += 2; /* ignore */
                 }else if( jsoneq( VAR_json_str, &t[i], ATTR_key_entry ) == 0 ){
                     i += 2; /* ignore */

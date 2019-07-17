@@ -305,7 +305,7 @@ eBody_main(CELLIDX idx)
         memset( VAR_arg, 0 , sizeof(VAR_arg) );
         memset( VAR_arg_type, 0 , sizeof(VAR_arg_type) );
 
-        ercd = cJSMN_json_parse_path( VAR_cell_path_tmp, VAR_entry_path_tmp, VAR_function_path_tmp, j, ATTR_NAME_LEN );
+        ercd = cJSMN_json_parse_path( VAR_region_path, VAR_cell_path, VAR_entry_path_tmp, VAR_function_path_tmp, j, ATTR_NAME_LEN );
         if( ercd == 1 ) continue; /* そのtarget#は見つからなかった */
         if( ercd == -1 ){
             cLCD_drawString( "parse error", 1, 0 );
@@ -318,8 +318,10 @@ eBody_main(CELLIDX idx)
 
 
         // cLCD_drawString( itoa(j), 0, 7 );
+        cLCD_drawString( "- Region:", 0, 0 );
+        cLCD_drawString( VAR_region_path, 10, 0 );
         cLCD_drawString( "- Cell:", 0, 1 );
-        cLCD_drawString( VAR_cell_path_tmp, 8, 1 );
+        cLCD_drawString( VAR_cell_path, 8, 1 );
         cLCD_drawString( "- Entry:", 0, 2 );
         cLCD_drawString( VAR_entry_path_tmp, 9, 2 );
         cLCD_drawString( "- Func:", 0, 3 );
@@ -348,7 +350,7 @@ eBody_main(CELLIDX idx)
         cKernel_delay( 1000 );
         cLCD_setFont( EV3_FONT_MEDIUM );
 
-        print_cell_by_path( p_cellcb, VAR_cell_path );
+        print_cell_by_path( p_cellcb, VAR_region_cell_path );
         cLCD_drawString( VAR_celltype_path, 3, 0 );
         while(1){
             if( cButton_isPressed( ENTER_BUTTON ) ){
