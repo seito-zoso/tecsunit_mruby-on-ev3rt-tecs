@@ -1,3 +1,5 @@
+import_C("json_struct.h");
+
 celltype tTaskMain {
     entry sTaskBody            eBody;
     // call  sTECSUnit            cUnit;
@@ -9,27 +11,27 @@ celltype tTaskMain {
     call sButton cButton;
 
     /* TECSInfo */
-    // call  nTECSInfo::sTECSInfo cTECSInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sNamespaceInfo cNSInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sRegionInfo    cRegionInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sCellInfo      cCellInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sSignatureInfo cSignatureInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sCelltypeInfo  cCelltypeInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sVarDeclInfo   cVarDeclInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sTypeInfo      cTypeInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sFunctionInfo  cFunctionInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sParamInfo     cParamInfo;
-    // [dynamic,optional]
-    //     call  nTECSInfo::sEntryInfo     cEntryInfo;
+    call  nTECSInfo::sTECSInfo cTECSInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sNamespaceInfo cNSInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sRegionInfo    cRegionInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sCellInfo      cCellInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sSignatureInfo cSignatureInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sCelltypeInfo  cCelltypeInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sVarDeclInfo   cVarDeclInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sTypeInfo      cTypeInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sFunctionInfo  cFunctionInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sParamInfo     cParamInfo;
+    [dynamic,optional]
+        call  nTECSInfo::sEntryInfo     cEntryInfo;
 
     attr{
         int16_t NAME_LEN = 128;
@@ -40,6 +42,10 @@ celltype tTaskMain {
     var{
         [size_is(NAME_LEN)]
             char_t  *cell_path;
+        [size_is(NAME_LEN)]
+            char_t  *region_path;
+        [size_is(NAME_LEN)]
+            char_t  *region_cell_path;
         [size_is(NAME_LEN)]
             char_t  *celltype_path;
         [size_is(NAME_LEN)]
@@ -59,6 +65,9 @@ celltype tTaskMain {
         char_t  arg_type[32][128];
         int8_t find_entry;
         int8_t find_func;
+        [size_is(ARG_DIM)]
+            struct tecsunit_obj *arg_struct;
+        struct tecsunit_obj exp_struct;
     };
 };
 
@@ -74,7 +83,7 @@ region rDomainEV3{
         cBody         = TaskMain.eBody;
     };
     cell tTaskMain TaskMain {
-        // cTECSInfo  = TECSInfo.eTECSInfo;
+        cTECSInfo  = TECSInfo.eTECSInfo;
         // cUnit = TECSUnit.eUnit;
         cJSMN = JSMN.eJSMN;
 

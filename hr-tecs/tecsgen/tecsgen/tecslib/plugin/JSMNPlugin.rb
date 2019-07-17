@@ -69,7 +69,7 @@ celltype tJSMN {
   call  sKernel  cKernel;
   attr {
     int16_t LEN = 1024; // jsonをまるごと読み込んだ時のサイズ
-    int16_t TMP_LEN = 32; // argの値を一時的に格納
+    int16_t TMP_LEN = 128; // argの値を一時的に格納
   /* json keywords：変更する場合はここを変える */
     char_t *key_cell = "cell";
     char_t *key_entry = "entry";
@@ -82,6 +82,9 @@ celltype tJSMN {
       char_t  *json_str;
     [size_is(TMP_LEN)]
       char_t  *tmp_str;
+    [size_is(TMP_LEN)]
+      char_t  *target_path;
+
     int counter = 0; // targetの数を数える
   };
 };
@@ -114,46 +117,45 @@ EOT
   } /* end if VALID_IDX(idx) */
 
   /* ここに処理本体を記述します #_TEFB_# */
-    char str_tmp[N];
     int co_flag = 0, co_start, i, j;
     FIL *fp;
     FRESULT res;
     FATFS fatfs;
 
     f_mount( &fatfs, "", 0 );
-    res = f_open( &fp, "json/target.json", FA_READ | FA_OPEN_EXISTING );
+    res = cFatFile_fopen( "json/target.json", "r");
     if( res != FR_OK ){
         return -1; // failed to open
     }
-    while( f_gets( str_tmp , N, &fp ) != NULL ) {
+    while( cFatFile_fgets( VAR_tmp_str , N ) != NULL ) {
         co_start = 0;
         for( i = 0; i < N -1; i++ ){
-            if( str_tmp[i] == '/' && str_tmp[i+1] == '/' && !co_flag ){
-                str_tmp[i] = '\\0';
+            if( VAR_tmp_str[i] == '/' && VAR_tmp_str[i+1] == '/' && !co_flag ){
+                VAR_tmp_str[i] = '\\0';
                 break;
             }
-            if( str_tmp[i] == '/' && str_tmp[i+1] == '*' && !co_flag ){
+            if( VAR_tmp_str[i] == '/' && VAR_tmp_str[i+1] == '*' && !co_flag ){
                 co_start = i;
                 co_flag = 1;
             }
-            if( str_tmp[i] == '*' && str_tmp[i+1] == '/' && co_flag ){
-                for(j = 0; str_tmp[(i+2)+j] != '\\0'; j++ ){
-                    str_tmp[co_start + j] = str_tmp[(i+2)+j];
+            if( VAR_tmp_str[i] == '*' && VAR_tmp_str[i+1] == '/' && co_flag ){
+                for(j = 0; VAR_tmp_str[(i+2)+j] != '\\0'; j++ ){
+                    VAR_tmp_str[co_start + j] = VAR_tmp_str[(i+2)+j];
                 }
-                str_tmp[co_start + j] = '\\0';
+                VAR_tmp_str[co_start + j] = '\\0';
                 i = co_start;
                 co_flag = 0;
             }
         }
         if( co_flag && co_start > 0 ){
-            str_tmp[co_start] = '\\0';
-            strcat( VAR_json_str, str_tmp );
+            VAR_tmp_str[co_start] = '\\0';
+            strcat( VAR_json_str, VAR_tmp_str );
         }
-        if( str_tmp[0] != '\\0' && str_tmp[0] != '\\n' && !co_flag ){
-            strcat( VAR_json_str, str_tmp );
+        if( VAR_tmp_str[0] != '\\0' && VAR_tmp_str[0] != '\\n' && !co_flag ){
+            strcat( VAR_json_str, VAR_tmp_str );
         }
     }
-    f_close( &fp );
+    cFatFile_fclose();
     return 0;
 EOT
   end
@@ -173,10 +175,8 @@ ER    ercd = E_OK;
     int r, i, j, k, l, m, array_size, arg_size;
     jsmn_parser p;
     jsmntok_t t[128]; /* We expect no more than 128 tokens */
-    char target_path[10];
-    char str_tmp[8];
 
-    sprintf( target_path, "target%d", target_num );
+    sprintf( VAR_target_path, "target%d", target_num );
 
     jsmn_init(&p);
     r = jsmn_parse( &p, VAR_json_str, strlen(VAR_json_str), t, sizeof(t)/sizeof(t[0]) );
@@ -192,7 +192,7 @@ ER    ercd = E_OK;
 
   /* Loop over all keys of the root object */
     for( l = 1; l < r; l++ ){
-        if( jsoneq( VAR_json_str, &t[l], target_path ) == 0 ){
+        if( jsoneq( VAR_json_str, &t[l], VAR_target_path ) == 0 ){
             if( t[l+1].type != JSMN_OBJECT ){
                 // printf("Object expected for target\\n");
                 return -1;
@@ -327,9 +327,8 @@ p struct_mem_list
     int r, i, j, k, l, m, arg_size, array_size;
     jsmn_parser p;
     jsmntok_t t[128]; /* We expect no more than 128 tokens */
-    char target_path[10];
 
-    sprintf( target_path, "target%d", target_num );
+    sprintf( VAR_target_path, "target%d", target_num );
 
     jsmn_init(&p);
     r = jsmn_parse( &p, VAR_json_str, strlen(VAR_json_str), t, sizeof(t)/sizeof(t[0]) );
@@ -345,7 +344,7 @@ p struct_mem_list
 
   /* Loop over all keys of the root object */
     for( l = 1; l < r; l++ ){
-        if( jsoneq( VAR_json_str, &t[l], target_path ) == 0 ){
+        if( jsoneq( VAR_json_str, &t[l], VAR_target_path ) == 0 ){
             if( t[l+1].type != JSMN_OBJECT ){
                 // printf("Object expected for target\\n");
                 return -1;

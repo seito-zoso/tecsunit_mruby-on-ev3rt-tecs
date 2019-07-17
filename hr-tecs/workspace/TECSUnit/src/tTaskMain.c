@@ -20,6 +20,8 @@
  * arg_type         char_t [32][128] VAR_arg_type
  * find_entry       int8_t           VAR_find_entry
  * find_func        int8_t           VAR_find_func
+ * arg_struct       struct tecsunit_obj*  VAR_arg_struct
+ * exp_struct       struct tecsunit_obj  VAR_exp_struct
  *
  * ?ƤӸ??ؿ?#_TCPF_#
  * call port: cJSMN signature: sJSMN context:task
@@ -61,6 +63,131 @@
  *   void           cLCD_showMessageBox( const char* title, const char* msg );
  * call port: cButton signature: sButton context:task
  *   bool_t         cButton_isPressed( button_t button );
+ * call port: cTECSInfo signature: nTECSInfo_sTECSInfo context:task
+ *   ER             cTECSInfo_findNamespace( const char_t* namespace_path, Descriptor( nTECSInfo_sNamespaceInfo )* nsDesc );
+ *   ER             cTECSInfo_findRegion( const char_t* namespace_path, Descriptor( nTECSInfo_sRegionInfo )* regionDesc );
+ *   ER             cTECSInfo_findSignature( const char_t* namespace_path, Descriptor( nTECSInfo_sSignatureInfo )* signatureDesc );
+ *   ER             cTECSInfo_findCelltype( const char_t* namespace_path, Descriptor( nTECSInfo_sCelltypeInfo )* celltypeDesc );
+ *   ER             cTECSInfo_findCell( const char_t* namespace_path, Descriptor( nTECSInfo_sCellInfo )* cellDesc );
+ *   ER             cTECSInfo_findRawEntryDescriptor( const char_t* namespace_path, Descriptor( nTECSInfo_sRawEntryDescriptorInfo )* rawEntryDescDesc, Descriptor( nTECSInfo_sEntryInfo )* entryDesc );
+ *   ER             cTECSInfo_findRawEntryDescriptor_unsafe( const char_t* namespace_path, uint32_t subsc, void** rawDesc );
+ * call port: cNSInfo signature: nTECSInfo_sNamespaceInfo context:task optional:true
+ *   bool_t     is_cNSInfo_joined()                     check if joined
+ *   ER             cNSInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cNSInfo_getNameLength( );
+ *   uint32_t       cNSInfo_getNNamespace( );
+ *   ER             cNSInfo_getNamespaceInfo( uint32_t ith, Descriptor( nTECSInfo_sNamespaceInfo )* des );
+ *   uint32_t       cNSInfo_getNSignature( );
+ *   ER             cNSInfo_getSignatureInfo( uint32_t ith, Descriptor( nTECSInfo_sSignatureInfo )* des );
+ *   uint32_t       cNSInfo_getNCelltype( );
+ *   ER             cNSInfo_getCelltypeInfo( uint32_t ith, Descriptor( nTECSInfo_sCelltypeInfo )* des );
+ *   [dynamic, optional]
+ *      void           cNSInfo_set_descriptor( Descriptor( nTECSInfo_sNamespaceInfo ) desc );
+ *      void           cNSInfo_unjoin(  );
+ * call port: cRegionInfo signature: nTECSInfo_sRegionInfo context:task optional:true
+ *   bool_t     is_cRegionInfo_joined()                     check if joined
+ *   ER             cRegionInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cRegionInfo_getNameLength( );
+ *   uint32_t       cRegionInfo_getNCell( );
+ *   ER             cRegionInfo_getCellInfo( uint32_t ith, Descriptor( nTECSInfo_sCellInfo )* des );
+ *   uint32_t       cRegionInfo_getNRegion( );
+ *   ER             cRegionInfo_getRegionInfo( uint32_t ith, Descriptor( nTECSInfo_sRegionInfo )* des );
+ *   [dynamic, optional]
+ *      void           cRegionInfo_set_descriptor( Descriptor( nTECSInfo_sRegionInfo ) desc );
+ *      void           cRegionInfo_unjoin(  );
+ * call port: cCellInfo signature: nTECSInfo_sCellInfo context:task optional:true
+ *   bool_t     is_cCellInfo_joined()                     check if joined
+ *   ER             cCellInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cCellInfo_getNameLength( );
+ *   uint32_t       cCellInfo_getNRawEntryDescriptorInfo( );
+ *   ER             cCellInfo_getRawEntryDescriptorInfo( int_t index, Descriptor( nTECSInfo_sRawEntryDescriptorInfo )* desc );
+ *   void           cCellInfo_getCelltypeInfo( Descriptor( nTECSInfo_sCelltypeInfo )* desc );
+ *   void           cCellInfo_getCBP( void** cbp );
+ *   void           cCellInfo_getINIBP( void** inibp );
+ *   [dynamic, optional]
+ *      void           cCellInfo_set_descriptor( Descriptor( nTECSInfo_sCellInfo ) desc );
+ *      void           cCellInfo_unjoin(  );
+ * call port: cSignatureInfo signature: nTECSInfo_sSignatureInfo context:task optional:true
+ *   bool_t     is_cSignatureInfo_joined()                     check if joined
+ *   ER             cSignatureInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cSignatureInfo_getNameLength( );
+ *   uint32_t       cSignatureInfo_getNFunction( );
+ *   ER             cSignatureInfo_getFunctionInfo( uint32_t ith, Descriptor( nTECSInfo_sFunctionInfo )* desc );
+ *   [dynamic, optional]
+ *      void           cSignatureInfo_set_descriptor( Descriptor( nTECSInfo_sSignatureInfo ) desc );
+ *      void           cSignatureInfo_unjoin(  );
+ * call port: cCelltypeInfo signature: nTECSInfo_sCelltypeInfo context:task optional:true
+ *   bool_t     is_cCelltypeInfo_joined()                     check if joined
+ *   ER             cCelltypeInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cCelltypeInfo_getNameLength( );
+ *   uint32_t       cCelltypeInfo_getNAttr( );
+ *   ER             cCelltypeInfo_getAttrInfo( uint32_t ith, Descriptor( nTECSInfo_sVarDeclInfo )* desc );
+ *   uint32_t       cCelltypeInfo_getNVar( );
+ *   ER             cCelltypeInfo_getVarInfo( uint32_t ith, Descriptor( nTECSInfo_sVarDeclInfo )* desc );
+ *   uint32_t       cCelltypeInfo_getNCall( );
+ *   ER             cCelltypeInfo_getCallInfo( uint32_t ith, Descriptor( nTECSInfo_sCallInfo )* desc );
+ *   uint32_t       cCelltypeInfo_getNEntry( );
+ *   ER             cCelltypeInfo_getEntryInfo( uint32_t ith, Descriptor( nTECSInfo_sEntryInfo )* desc );
+ *   bool_t         cCelltypeInfo_isSingleton( );
+ *   bool_t         cCelltypeInfo_isIDX_is_ID( );
+ *   uint32_t       cCelltypeInfo_sizeOfCB( );
+ *   uint32_t       cCelltypeInfo_sizeOfINIB( );
+ *   [dynamic, optional]
+ *      void           cCelltypeInfo_set_descriptor( Descriptor( nTECSInfo_sCelltypeInfo ) desc );
+ *      void           cCelltypeInfo_unjoin(  );
+ * call port: cVarDeclInfo signature: nTECSInfo_sVarDeclInfo context:task optional:true
+ *   bool_t     is_cVarDeclInfo_joined()                     check if joined
+ *   ER             cVarDeclInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cVarDeclInfo_getNameLength( );
+ *   void           cVarDeclInfo_getLocationInfo( uint32_t* offset, int8_t* place );
+ *   void           cVarDeclInfo_getTypeInfo( Descriptor( nTECSInfo_sTypeInfo )* desc );
+ *   void           cVarDeclInfo_getSizeIsExpr( char_t* expr_str, int32_t max_len );
+ *   ER             cVarDeclInfo_getSizeIs( uint32_t* size, const void* p_cb );
+ *   [dynamic, optional]
+ *      void           cVarDeclInfo_set_descriptor( Descriptor( nTECSInfo_sVarDeclInfo ) desc );
+ *      void           cVarDeclInfo_unjoin(  );
+ * call port: cTypeInfo signature: nTECSInfo_sTypeInfo context:task optional:true
+ *   bool_t     is_cTypeInfo_joined()                     check if joined
+ *   ER             cTypeInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cTypeInfo_getNameLength( );
+ *   uint32_t       cTypeInfo_getSize( );
+ *   int8_t         cTypeInfo_getKind( );
+ *   uint32_t       cTypeInfo_getNType( );
+ *   ER             cTypeInfo_getTypeInfo( Descriptor( nTECSInfo_sTypeInfo )* desc );
+ *   uint32_t       cTypeInfo_getNMember( );
+ *   ER             cTypeInfo_getMemberInfo( uint32_t ith, Descriptor( nTECSInfo_sVarDeclInfo )* desc );
+ *   [dynamic, optional]
+ *      void           cTypeInfo_set_descriptor( Descriptor( nTECSInfo_sTypeInfo ) desc );
+ *      void           cTypeInfo_unjoin(  );
+ * call port: cFunctionInfo signature: nTECSInfo_sFunctionInfo context:task optional:true
+ *   bool_t     is_cFunctionInfo_joined()                     check if joined
+ *   ER             cFunctionInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cFunctionInfo_getNameLength( );
+ *   void           cFunctionInfo_getReturnTypeInfo( Descriptor( nTECSInfo_sTypeInfo )* desc );
+ *   uint32_t       cFunctionInfo_getNParam( );
+ *   ER             cFunctionInfo_getParamInfo( uint32_t ith, Descriptor( nTECSInfo_sParamInfo )* param );
+ *   [dynamic, optional]
+ *      void           cFunctionInfo_set_descriptor( Descriptor( nTECSInfo_sFunctionInfo ) desc );
+ *      void           cFunctionInfo_unjoin(  );
+ * call port: cParamInfo signature: nTECSInfo_sParamInfo context:task optional:true
+ *   bool_t     is_cParamInfo_joined()                     check if joined
+ *   ER             cParamInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cParamInfo_getNameLength( );
+ *   ER             cParamInfo_getTypeInfo( Descriptor( nTECSInfo_sTypeInfo )* desc );
+ *   ER             cParamInfo_getDir( int8_t* dir );
+ *   [dynamic, optional]
+ *      void           cParamInfo_set_descriptor( Descriptor( nTECSInfo_sParamInfo ) desc );
+ *      void           cParamInfo_unjoin(  );
+ * call port: cEntryInfo signature: nTECSInfo_sEntryInfo context:task optional:true
+ *   bool_t     is_cEntryInfo_joined()                     check if joined
+ *   ER             cEntryInfo_getName( char_t* name, int_t max_len );
+ *   uint16_t       cEntryInfo_getNameLength( );
+ *   void           cEntryInfo_getSignatureInfo( Descriptor( nTECSInfo_sSignatureInfo )* desc );
+ *   uint32_t       cEntryInfo_getArraySize( );
+ *   bool_t         cEntryInfo_isInline( );
+ *   [dynamic, optional]
+ *      void           cEntryInfo_set_descriptor( Descriptor( nTECSInfo_sEntryInfo ) desc );
+ *      void           cEntryInfo_unjoin(  );
  *
  * #[</PREAMBLE>]# */
 
@@ -74,6 +201,13 @@
 #define E_OK    0       /* success */
 #define E_ID    (-18)   /* illegal ID */
 #endif
+
+static void
+print_cell_by_path( CELLCB *p_cellcb, char_t *path );
+static void
+print_cell( CELLCB *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc );
+static void
+print_celltype( CELLCB   *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc );
 
 // static void
 // print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag );
@@ -108,7 +242,6 @@ eBody_main(CELLIDX idx)
 {
     CELLCB  *p_cellcb;
     ER      ercd, ercd2;
-    uint32_t  n;
     // Descriptor( nTECSInfo_sNamespaceInfo ) NSdesc;
     // Descriptor( nTECSInfo_sRegionInfo )    RGNdesc;
 
@@ -120,9 +253,10 @@ eBody_main(CELLIDX idx)
     } /* end if VALID_IDX(idx) */
 
     /* ここに処理本体を記述します #_TEFB_# */
-    struct tecsunit_obj arguments[ATTR_ARG_DIM];
-    struct tecsunit_obj exp_val;
-    int i, j, arg_num, flag = 0;
+    // struct tecsunit_obj arguments[ATTR_ARG_DIM];
+    // struct tecsunit_obj exp_val;
+    // int i, j, arg_num, flag = 0;
+    int8_t j;
 
     cLCD_setFont( EV3_FONT_MEDIUM );
     cLCD_drawString( "JSON_OPEN", 1, 0 );
@@ -167,11 +301,11 @@ eBody_main(CELLIDX idx)
         /* 初期化 */
         VAR_find_entry = 0;
         VAR_find_func = 0;
-        memset( arguments, 0 , sizeof(arguments) );
+        memset( VAR_arg_struct, 0 , sizeof(VAR_arg_struct) );
         memset( VAR_arg, 0 , sizeof(VAR_arg) );
         memset( VAR_arg_type, 0 , sizeof(VAR_arg_type) );
 
-        ercd = cJSMN_json_parse_path( VAR_cell_path, VAR_entry_path_tmp, VAR_function_path_tmp, j, ATTR_NAME_LEN );
+        ercd = cJSMN_json_parse_path( VAR_cell_path_tmp, VAR_entry_path_tmp, VAR_function_path_tmp, j, ATTR_NAME_LEN );
         if( ercd == 1 ) continue; /* そのtarget#は見つからなかった */
         if( ercd == -1 ){
             cLCD_drawString( "parse error", 1, 0 );
@@ -185,7 +319,7 @@ eBody_main(CELLIDX idx)
 
         // cLCD_drawString( itoa(j), 0, 7 );
         cLCD_drawString( "- Cell:", 0, 1 );
-        cLCD_drawString( VAR_cell_path, 8, 1 );
+        cLCD_drawString( VAR_cell_path_tmp, 8, 1 );
         cLCD_drawString( "- Entry:", 0, 2 );
         cLCD_drawString( VAR_entry_path_tmp, 9, 2 );
         cLCD_drawString( "- Func:", 0, 3 );
@@ -199,12 +333,30 @@ eBody_main(CELLIDX idx)
         }
         cKernel_delay( 1000 );
 
-        // printf( "--- JSON ---\n" );
-        // printf( "- Cell: \"%s\"\n", VAR_cell_path );
-        // printf( "- Entry: \"%s\"\n", VAR_entry_path_tmp );
-        // printf( "- Function: \"%s\"\n", VAR_function_path_tmp );
+        strcat( VAR_region_cell_path, VAR_region_path );
+        strcat( VAR_region_cell_path, "::" );
+        strcat( VAR_region_cell_path, VAR_cell_path );
 
+        cLCD_setFont( EV3_FONT_SMALL );
+        cLCD_drawString( VAR_region_cell_path, 0, 1 );
+        while(1){
+            if( cButton_isPressed( ENTER_BUTTON ) ){
+                cLCD_clear();
+                break;
+            }
+        }
+        cKernel_delay( 1000 );
+        cLCD_setFont( EV3_FONT_MEDIUM );
 
+        print_cell_by_path( p_cellcb, VAR_cell_path );
+        cLCD_drawString( VAR_celltype_path, 3, 0 );
+        while(1){
+            if( cButton_isPressed( ENTER_BUTTON ) ){
+                cLCD_clear();
+                break;
+            }
+        }
+        cKernel_delay( 1000 );
         // printf( "--- TECSInfo ---\n" );
         // print_cell_by_path( p_cellcb, VAR_cell_path , &flag );
 
@@ -224,20 +376,20 @@ eBody_main(CELLIDX idx)
 
         // for( i = 0; i < VAR_arg_num; i++ ){
         //     // printf( "  %d %s %s\n", i+1, VAR_arg_type[i], VAR_arg[i] );
-        //     strcpy( arguments[i].type, VAR_arg_type[i] );
+        //     strcpy( VAR_arg_struct[i].type, VAR_arg_type[i] );
         // }
-        // strcpy( exp_val.type, VAR_exp_type );
-        // // printf( "- Return Type: %s\n", exp_val.type );
-        // // argumentsにはtypeのみがTECSInfoにより入っている状態。
-        // ercd = cJSMN_json_parse_arg( arguments, &exp_val, &arg_num, j, ATTR_NAME_LEN );
+        // strcpy( VAR_exp_struct.type, VAR_exp_type );
+        // // printf( "- Return Type: %s\n", VAR_exp_struct.type );
+        // // VAR_arg_struct
+        // ercd = cJSMN_json_parse_arg( VAR_arg_struct, &VAR_exp_struct, &arg_num, j, ATTR_NAME_LEN );
         // if( ercd == -1 ) return; /* jsmnエラー */
 
         // if( arg_num != VAR_arg_num ){
-        //     // printf( "Error: Wrong number of arguments\n" );
-        //     // printf( "You expected %d arguments. Function \"%s\" has %d arguments\n",
+        //     // printf( "Error: Wrong number of VAR_arg_struct\n" );
+        //     // printf( "You expected %d VAR_arg_struct. Function \"%s\" has %d arguments\n",
         //         arg_num, VAR_function_path, VAR_arg_num );
         // }
-        // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, arguments, &exp_val );
+        // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
         // printf("\n\n");
     //     if( ercd == 2 ){
     //         printf( "All targets are checked\n" );
@@ -254,7 +406,47 @@ eBody_main(CELLIDX idx)
 /* #[<POSTAMBLE>]#
  *   ?????겼????????ؿ?????ޤ?
  * #[</POSTAMBLE>]#*/
+static void
+print_cell_by_path( CELLCB *p_cellcb, char_t *path ){
 
+  Descriptor( nTECSInfo_sCellInfo )  desc;
+  ER    ercd;
+
+  ercd = cTECSInfo_findCell( path, &desc );
+  if( ercd == E_OK ){
+      print_cell( p_cellcb, desc );
+  }
+  else{
+    cLCD_drawString( "Cannnot find!", 1, 0 );
+    while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+    }
+    cKernel_delay( 1000 );
+  }
+}
+static void
+print_cell( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCellInfo )  CELLdesc )
+{
+    Descriptor( nTECSInfo_sCelltypeInfo ) CTdesc;
+
+    cCellInfo_set_descriptor( CELLdesc );
+    cCellInfo_getCelltypeInfo( &CTdesc );
+
+    /* celltype info */
+    print_celltype( p_cellcb, CTdesc );
+}
+
+static void
+print_celltype( CELLCB  *p_cellcb, Descriptor( nTECSInfo_sCelltypeInfo )  CTdesc )
+{
+  // char_t buf[8];
+  cCelltypeInfo_set_descriptor( CTdesc );
+  cCelltypeInfo_getName( VAR_celltype_path, 8 );
+
+}
 // static void
 // print_cell_by_path( CELLCB *p_cellcb, char_t *path , int *flag )
 // {

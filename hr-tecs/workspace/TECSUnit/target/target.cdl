@@ -25,12 +25,14 @@ celltype tTarget3 {
   entry sTarget3 eTarget3;
 };
 /* TECSUnit テスト対象セル */
-cell tTarget1 Target1 {
+region rDomainEV3 {
+  cell tTarget1 Target1 {
 
-};
-cell tTarget2 Target2 {
+  };
+  cell tTarget2 Target2 {
 
-};
-cell tTarget3 Target3 {
+  };
+  cell tTarget3 Target3 {
 
+  };
 };
