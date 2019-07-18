@@ -61,6 +61,7 @@ celltype tTaskMain {
         [size_is(NAME_LEN)]
             char_t  *function_path_tmp;
         int8_t arg_num;
+        int8_t arg_num_json;
         [size_is(NAME_LEN)]
             char_t *exp_type;
         char_t  arg[32][128];

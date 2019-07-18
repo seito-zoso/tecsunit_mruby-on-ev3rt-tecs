@@ -2,6 +2,8 @@ struct tecsunit_obj{
   char    type[32]; /* TECSInfoにより型名を格納します */
   union{
 /* 新しい型はここに追加してください */
+    void *mem_void_buf;
+    // TCHAR *mem_tchar_buf;
     // ER mem_er;
     // struct target_struct mem_target_struct_buf;
 /* 以下は参照：https://tecs-docs.readthedocs.io/ja/latest/tecs/CDLref_type.html?highlight=%E5%9E%8B */

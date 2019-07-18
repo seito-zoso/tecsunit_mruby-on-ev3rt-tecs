@@ -7,7 +7,10 @@
  * ARG_NAME_LEN     int16_t          ATTR_ARG_NAME_LEN
  * ARG_DIM          int16_t          ATTR_ARG_DIM
  * TARGET_NUM       int16_t          ATTR_TARGET_NUM
+ * target_path      char_t*          VAR_target_path
  * cell_path        char_t*          VAR_cell_path
+ * region_path      char_t*          VAR_region_path
+ * region_cell_path char_t*          VAR_region_cell_path
  * celltype_path    char_t*          VAR_celltype_path
  * entry_path       char_t*          VAR_entry_path
  * entry_path_tmp   char_t*          VAR_entry_path_tmp
@@ -15,6 +18,7 @@
  * function_path    char_t*          VAR_function_path
  * function_path_tmp char_t*          VAR_function_path_tmp
  * arg_num          int8_t           VAR_arg_num
+ * arg_num_json     int8_t           VAR_arg_num_json
  * exp_type         char_t*          VAR_exp_type
  * arg              char_t [32][128] VAR_arg
  * arg_type         char_t [32][128] VAR_arg_type
@@ -26,7 +30,7 @@
  * ?ƤӸ??ؿ?#_TCPF_#
  * call port: cJSMN signature: sJSMN context:task
  *   ER             cJSMN_json_open( );
- *   ER             cJSMN_json_parse_path( char_t* c_path, char_t* e_path, char_t* f_path, int target_num, int btr );
+ *   ER             cJSMN_json_parse_path( char_t* r_path, char_t* c_path, char_t* e_path, char_t* f_path, int target_num, int btr );
  *   ER             cJSMN_json_parse_arg( struct tecsunit_obj* arguments, struct tecsunit_obj* exp_val, int* arg_num, int target_num, int btr );
  * call port: cKernel signature: sKernel context:task
  *   ER             cKernel_sleep( );
@@ -246,9 +250,6 @@ eBody_main(CELLIDX idx)
     } /* end if VALID_IDX(idx) */
 
     /* ここに処理本体を記述します #_TEFB_# */
-    // struct tecsunit_obj arguments[ATTR_ARG_DIM];
-    // struct tecsunit_obj exp_val;
-    // int i, j, arg_num, flag = 0;
     int8_t i, j, flag = 0;
 
     ercd = cJSMN_json_open();
@@ -364,15 +365,13 @@ eBody_main(CELLIDX idx)
         cKernel_delay( 500 );
 
 
-        // // printf( "- Return Type: %s\n", VAR_exp_struct.type );
-        // // VAR_arg_struct
-        // ercd = cJSMN_json_parse_arg( VAR_arg_struct, &VAR_exp_struct, &arg_num, j, ATTR_NAME_LEN );
-        // if( ercd == -1 ) return; /* jsmnエラー */
+        ercd = cJSMN_json_parse_arg( VAR_arg_struct, &VAR_exp_struct, &VAR_arg_num_json, j, ATTR_NAME_LEN );
+        if( ercd == -1 ) return; /* jsmnエラー */
 
-        // if( arg_num != VAR_arg_num ){
+        // if( VAR_arg_num_json != VAR_arg_num ){
         //     // printf( "Error: Wrong number of VAR_arg_struct\n" );
         //     // printf( "You expected %d VAR_arg_struct. Function \"%s\" has %d arguments\n",
-        //         arg_num, VAR_function_path, VAR_arg_num );
+        //         VAR_arg_num_json, VAR_function_path, VAR_arg_num );
         // }
         // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
         // printf("\n\n");

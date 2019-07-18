@@ -102,7 +102,7 @@ EOT
       print_parse_path( file, Namespace.get_root )
     end
     if func_name.to_s == "json_parse_arg" then
-      # print_parse_arg( file, Namespace.get_root )
+      print_parse_arg( file, Namespace.get_root )
     end
 
   end
@@ -468,24 +468,24 @@ EOT
         if idx == 0 then
           file.print <<EOT
                                 if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
 EOT
         end
       else
         if idx == 0 then
           file.print <<EOT
                                 if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
 EOT
         end
       end
