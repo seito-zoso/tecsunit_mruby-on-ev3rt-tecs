@@ -368,22 +368,38 @@ eBody_main(CELLIDX idx)
         ercd = cJSMN_json_parse_arg( VAR_arg_struct, &VAR_exp_struct, &VAR_arg_num_json, j, ATTR_NAME_LEN );
         if( ercd == -1 ) return; /* jsmnエラー */
 
-        // if( VAR_arg_num_json != VAR_arg_num ){
-        //     // printf( "Error: Wrong number of VAR_arg_struct\n" );
-        //     // printf( "You expected %d VAR_arg_struct. Function \"%s\" has %d arguments\n",
-        //         VAR_arg_num_json, VAR_function_path, VAR_arg_num );
-        // }
+        if( VAR_arg_num_json != VAR_arg_num ){
+            // printf( "Error: Wrong number of VAR_arg_struct\n" );
+            cLCD_drawString( "Error: Wrong number argments", 0, 0);
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+        }
         // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
-        // printf("\n\n");
-    //     if( ercd == 2 ){
-    //         printf( "All targets are checked\n" );
-    //         return;
-    //     }
+        if( ercd == 2 ){
+            cLCD_drawString( "All targets are checked", 0, 0);
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                }
+            }
+            cKernel_delay( 500 );
+            return;
+        }
     }
 
     if( j > ATTR_TARGET_NUM ){
-        // printf( "Error: Too many targets or keyword is wrong.\n" );
-        // printf( "Keyword is \"target#\" and keep the target number 1 ~ %d\n", ATTR_TARGET_NUM );
+        cLCD_drawString( "Error: Too many targets or keyword is wrong", 0, 0);
+        while(1){
+            if( cButton_isPressed( ENTER_BUTTON ) ){
+                cLCD_clear();
+            }
+        }
+        cKernel_delay( 500 );
     }
 }
 
