@@ -315,8 +315,8 @@ EOT
         }
       end
     }
-p struct_list
-p struct_mem_list
+# p struct_list
+# p struct_mem_list
     file.print <<EOT
   ER    ercd = E_OK;
   CELLCB  *p_cellcb;
@@ -468,24 +468,24 @@ EOT
         if idx == 0 then
           file.print <<EOT
                                 if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj..sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
 EOT
         end
       else
         if idx == 0 then
           file.print <<EOT
                                 if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.downcase.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
+                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atoi( VAR_tmp_str );
 EOT
         end
       end
@@ -527,24 +527,24 @@ EOT
         if idx == 0 then
           file.print <<EOT
                             if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj.downcase} = atof( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj} = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                             }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj.downcase} = atof( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj} = atof( VAR_tmp_str );
 EOT
         end
       else
         if idx == 0 then
           file.print <<EOT
                             if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj.downcase} = atoi( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj} = atoi( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                             }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj.downcase} = atoi( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj} = atoi( VAR_tmp_str );
 EOT
         end
       end
@@ -616,24 +616,24 @@ EOT
         if idx == 0 then
           file.print <<EOT
                         if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj.downcase} = atof( VAR_tmp_str );
+                            exp_val->data.mem_#{obj} = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                         }else if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj.downcase} = atof( VAR_tmp_str );
+                            exp_val->data.mem_#{obj} = atof( VAR_tmp_str );
 EOT
         end
       else
         if idx == 0 then
           file.print <<EOT
                         if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj.downcase} = atoi( VAR_tmp_str );
+                            exp_val->data.mem_#{obj} = atoi( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                         }else if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj.downcase} = atoi( VAR_tmp_str );
+                            exp_val->data.mem_#{obj} = atoi( VAR_tmp_str );
 EOT
         end
       end
