@@ -119,7 +119,6 @@ EOT
 
   /* ここに処理本体を記述します #_TEFB_# */
     int co_flag = 0, co_start, i, j;
-    FIL *fp;
     FRESULT res;
     FATFS fatfs;
 
@@ -273,7 +272,7 @@ EOT
           param = paramDecl.get_type.get_type_str
           if param.include?("*") then
             if param.include?("const") then
-              if param.include?("char") then # [in]: char*型
+              if param.include?("char") || param.include?("CHAR") then # [in]: char*型
                 if !char_list.include?(param) then
                   # char_list << param.sub(/\*/, '_buf').sub('const ', '') # 被っていなければ追加
                   char_list << param
@@ -391,7 +390,7 @@ EOT
                                 i += 1; // 配列の中身に注目
                                 strcpy_n( VAR_tmp_str, t[i].end - t[i].start, VAR_json_str + t[i].start );
 EOT
-    print_arr_list( file, arr_list, out_list )
+    print_arr_list( file, arr_list )
     file.print <<EOT
                                 }else{
                                     // printf("Arg %d is not array type\\n", j+1 );
@@ -455,14 +454,14 @@ EOT
     }
     return 1;
 EOT
-        puts "char_list #{char_list}"
-        puts "struct_list #{struct_list}"
-        puts "arr_list #{arr_list}"
-        puts "out_list #{out_list}"
-        puts "num_list #{num_list}"
+        # puts "char_list #{char_list}"
+        # puts "struct_list #{struct_list}"
+        # puts "arr_list #{arr_list}"
+        # puts "out_list #{out_list}"
+        # puts "num_list #{num_list}"
   end
 
-  def print_arr_list( file, arr_list, out_list )
+  def print_arr_list( file, arr_list )
     arr_list.each_with_index { |obj, idx|
       if obj.include?("double") || obj.include?("float") then
         if idx == 0 then
@@ -490,17 +489,17 @@ EOT
         end
       end
     }
-    out_list.each_with_index{ |obj, idx|
-      if arr_list.empty? then
-        file.print <<EOT
-                                if( !strcmp(arguments[j].type,"#{obj}") ){
-EOT
-      else
-        file.print <<EOT
-                                }else if( !strcmp(arguments[j].type,"#{obj}") ){
-EOT
-      end
-    }
+#     out_list.each_with_index{ |obj, idx|
+#       if arr_list.empty? then
+#         file.print <<EOT
+#                                 if( !strcmp(arguments[j].type,"#{obj}") ){
+# EOT
+#       else
+#         file.print <<EOT
+#                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
+# EOT
+#       end
+#     }
   end
 
 

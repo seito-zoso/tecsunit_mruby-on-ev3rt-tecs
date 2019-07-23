@@ -70,7 +70,7 @@ struct tecsunit_obj{
 /*
  *  tool_stddef.h
  */
-#ifdef TOPPERS_STDINT_TYPE1
+// #ifdef TOPPERS_STDINT_TYPE1
 #ifndef TOPPERS_MACRO_ONLY
     int8_t      mem_int8_t;     /* 符号付き8ビット整数 */
     uint8_t     mem_uint8_t;    /* 符号無し8ビット整数 */
@@ -90,7 +90,7 @@ struct tecsunit_obj{
     intptr_t    mem_intptr_t;   /* ポインタを格納できる符号付き整数 */
     uintptr_t   mem_uintptr_t;  /* ポインタを格納できる符号無し整数 */
 #endif /* TOPPERS_MACRO_ONLY */
-#endif /* TOPPERS_STDINT_TYPE1 */
+// #endif /* TOPPERS_STDINT_TYPE1 */
 #ifdef TOPPERS_STDFLOAT_TYPE1
 #ifndef TOPPERS_MACRO_ONLY
     float32_t   mem_float32_t;          /* IEEE754準拠の単精度浮動小数点数 */
@@ -213,9 +213,7 @@ struct tecsunit_obj{
 /*
  *  ev3api_button.h
  */
-#ifdef TECSGEN
     button_t    mem_button_t;   /* ボタンを表す番号 */
-#endif
 
 /*
  *  ev3api_fs.h
@@ -223,7 +221,7 @@ struct tecsunit_obj{
     memfile_t   mem_memfile_t;  /* メモリファイルの構造体．メモリファイルのデータは，SDカードではなく，メモリに格納される． */
     fileinfo_t  mem_fileinfo_t; /* ファイル情報の構造体． */
 #ifdef TECSGEN
-    FILE    mem_file;       /* dummy for tecgen */
+    FILE    mem_FILE;       /* dummy for tecgen */
     serial_port_t   mem_serial_port_t;  /* dummy for tecgen */
 #else
     serial_port_t   mem_serial_port_t;
@@ -232,18 +230,14 @@ struct tecsunit_obj{
 /*
  *  ev3api_lcd.h
  */
-#ifdef TECSGEN
     lcdfont_t   mem_lcdfont_t;  /* フォントを表す番号 */
     lcdcolor_t  mem_lcdcolor_t; /* LCDカラーを表す番号 */
     image_t     mem_image_t;    /* 画像のオブジェクトの構造体 */
-#endif
 
 /*
  *  ev3api_led.h
  */
-#ifndef TECSGEN
     ledcolor_t  mem_ledcolor_t; /* 設定できるLEDカラーの列挙型 */
-#endif
 
 /*
  *  ev3api_motor.h
@@ -343,7 +337,7 @@ struct tecsunit_obj{
     ulong_t   mem_ulong_t_buf[64];
     bool_t     mem_bool_t_buf[64];
 #endif /* TOPPERS_MACRO_ONLY */
-#ifdef TOPPERS_STDINT_TYPE1
+// #ifdef TOPPERS_STDINT_TYPE1
 #ifndef TOPPERS_MACRO_ONLY
     int8_t     mem_int8_t_buf[256];
     uint8_t    mem_uint8_t_buf[256];
@@ -357,7 +351,7 @@ struct tecsunit_obj{
     int64_t    mem_int64_t_buf[32];
     uint64_t   mem_uint64_t_buf[32];
 #endif /* TOPPERS_MACRO_ONLY */
-#endif /* TOPPERS_STDINT_TYPE1 */
+// #endif /* TOPPERS_STDINT_TYPE1 */
 
   } data;
 };
