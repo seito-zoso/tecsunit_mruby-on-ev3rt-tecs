@@ -43,7 +43,14 @@ eTarget2_add(CELLIDX idx, int arg1, int arg2)
 	} /* end if VALID_IDX(idx) */
 
 	/* ここに処理本体を記述します #_TEFB_# */
-    printf("%d\n", arg1 + arg2 );
+    cLCD_drawString( "This is Target2", 0, 0);
+    while(1){
+        if( cButton_isPressed( ENTER_BUTTON ) ){
+            cLCD_clear();
+            break;
+        }
+    }
+    cKernel_delay( 500 );
     return arg1 + arg2;
 }
 

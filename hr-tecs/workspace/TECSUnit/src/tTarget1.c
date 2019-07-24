@@ -45,8 +45,16 @@ eTarget1_double(CELLIDX idx, int arg)
 	/* ここに処理本体を記述します #_TEFB_# */
     int answer;
     answer = arg * 2;
-    printf("ans = %d\n", answer );
+    cLCD_drawString( "This is Target1", 0, 0);
+    while(1){
+        if( cButton_isPressed( ENTER_BUTTON ) ){
+            cLCD_clear();
+            break;
+        }
+    }
+    cKernel_delay( 500 );
     return answer;
+
 }
 
 /* #[<POSTAMBLE>]#

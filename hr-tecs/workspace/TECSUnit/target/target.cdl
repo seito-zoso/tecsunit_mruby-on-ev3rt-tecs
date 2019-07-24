@@ -16,23 +16,38 @@ signature sTarget3 {
 
 /* TECSUnit テスト対象セルタイプ */
 celltype tTarget1 {
-  entry sTarget1 eTarget1;
+  entry sTarget1  eTarget1;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
 };
 celltype tTarget2 {
-  entry sTarget2 eTarget2;
+  entry sTarget2  eTarget2;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
 };
 celltype tTarget3 {
-  entry sTarget3 eTarget3;
+  entry sTarget3  eTarget3;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
 };
 /* TECSUnit テスト対象セル */
 region rDomainEV3 {
   cell tTarget1 Target1 {
-
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
   };
   cell tTarget2 Target2 {
-
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
   };
   cell tTarget3 Target3 {
-
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
   };
 };

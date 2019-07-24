@@ -65,6 +65,11 @@ class TECSUnitPlugin < CellPlugin
 
 celltype tTECSUnit {
     entry sTECSUnit eUnit;
+    call  sLCD      cLCD_tmp;
+    call  sButton   cButton_tmp;
+    call  sKernel   cKernel_tmp;
+    call  sFatFile  cFatFile_tmp;
+
     /*----- TECSInfo -----*/
     call nTECSInfo::sTECSInfo cTECSInfo;
     [dynamic,optional]
@@ -119,8 +124,19 @@ EOT
 
   def print_all_call_port file, namespace
     namespace.travers_all_signature{ |sig|
-      if sig.get_namespace_path.to_s =~ /nTECSInfo::/ || sig.get_namespace_path.to_s =~ /::sTask.*/ || sig.get_namespace_path.to_s =~ /::sAccessor/ || sig.get_namespace_path.to_s =~ /::sTECSUnit/ || sig.get_namespace_path.to_s =~ /::sJSMN/ || sig.get_namespace_path.to_s =~ /::s.*Kernel/ || sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ then
-      # ignnore these signatures
+      if  sig.get_namespace_path.to_s =~ /nTECSInfo::/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Task.*/ || \
+          sig.get_namespace_path.to_s =~ /::sAccessor/ || \
+          sig.get_namespace_path.to_s =~ /::sTECSUnit/ || \
+          sig.get_namespace_path.to_s =~ /::sJSMN/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Kernel/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
+          sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
+          sig.get_namespace_path.to_s =~ /::s.*VM/ || \
+          sig.get_namespace_path.to_s =~ /::sMain/ then
+        # ignnore these signatures
       else
         file.print <<EOT
     [dynamic, optional]
@@ -142,8 +158,6 @@ EOT
   else {
     /* エラー処理コードをここに記述します */
   } /* end if VALID_IDX(idx) */
-  puts("");
-  printf( "--- TECSUnit ---\\n" );
   void *rawDesc;
 EOT
 
@@ -158,8 +172,19 @@ EOT
 
   def print_desc( file, namespace )
     namespace.travers_all_signature{ |sig|
-      if sig.get_namespace_path.to_s =~ /nTECSInfo::/ || sig.get_namespace_path.to_s =~ /::sTask.*/ || sig.get_namespace_path.to_s =~ /::sAccessor/ || sig.get_namespace_path.to_s =~ /::sTECSUnit/ || sig.get_namespace_path.to_s =~ /::sJSMN/ || sig.get_namespace_path.to_s =~ /::s.*Kernel/ || sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ then
-      # ignnore these signatures
+      if  sig.get_namespace_path.to_s =~ /nTECSInfo::/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Task.*/ || \
+          sig.get_namespace_path.to_s =~ /::sAccessor/ || \
+          sig.get_namespace_path.to_s =~ /::sTECSUnit/ || \
+          sig.get_namespace_path.to_s =~ /::sJSMN/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Kernel/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
+          sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
+          sig.get_namespace_path.to_s =~ /::s.*VM/ || \
+          sig.get_namespace_path.to_s =~ /::sMain/ then
+        # ignnore these signatures
       else
         file.print <<EOT
   Descriptor( #{sig.get_name} ) #{sig.get_name[1..-1]}Desc;
@@ -171,7 +196,18 @@ EOT
   def print_branch_sig( file, namespace )
     flag = true
     namespace.travers_all_signature{ |sig|
-      if sig.get_namespace_path.to_s =~ /nTECSInfo::/ || sig.get_namespace_path.to_s =~ /::sTask.*/ || sig.get_namespace_path.to_s =~ /::sAccessor/ || sig.get_namespace_path.to_s =~ /::sTECSUnit/ || sig.get_namespace_path.to_s =~ /::sJSMN/ || sig.get_namespace_path.to_s =~ /::s.*Kernel/ || sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ then
+      if  sig.get_namespace_path.to_s =~ /nTECSInfo::/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Task.*/ || \
+          sig.get_namespace_path.to_s =~ /::sAccessor/ || \
+          sig.get_namespace_path.to_s =~ /::sTECSUnit/ || \
+          sig.get_namespace_path.to_s =~ /::sJSMN/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Kernel/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
+          sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
+          sig.get_namespace_path.to_s =~ /::s.*VM/ || \
+          sig.get_namespace_path.to_s =~ /::sMain/ then
       # ignnore these signatures
       else
         if flag then
@@ -259,9 +295,9 @@ EOT
           end
         else
           if param.include?("struct") then
-            paramSet.concat("&arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').downcase}")
+            paramSet.concat("&arguments[#{i}].data")
           else
-            paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').downcase}")
+            paramSet.concat("arguments[#{i}].data")
           end
         end
         i = i + 1
@@ -279,15 +315,15 @@ EOT
           end
         else
           if param.include?("struct") then
-            paramSet.concat(", &arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').downcase}")
+            paramSet.concat(", &arguments[#{i}].data")
           else
-            paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').downcase}")
+            paramSet.concat(", arguments[#{i}]")
           end
         end
         i = i + 1
       end
       # exp_valの追加
-      exp_val = "exp_val->" + "data.mem_#{decl.get_type.get_type_str.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').downcase}"
+      exp_val = "exp_val->data"
     }
     # 最後のシグニチャ関数を出力
     if flag then # シグニチャ関数の１つ目
@@ -309,11 +345,10 @@ EOT
   def print_call_desc1( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
     file.print <<EOT
       if( !strcmp( function_path, "#{str}" ) ){
-        printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-          printf("\\nResult：OK\\n");
+            return E_OK;
         }else{
-          printf("\\nResult：NG\\n");
+            return E_NG;
         }
 EOT
     out_check( file, int_count, double_count, char_count )
@@ -325,11 +360,10 @@ EOT
   def print_call_desc2( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
     file.print <<EOT
       else if( !strcmp( function_path, "#{str}" ) ){
-        printf("Call c#{signature.get_name[1..-1]}_#{str}\\n");
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-          printf("\\nResult：OK\\n");
+            return E_OK;
         }else{
-          printf("\\nResult：NG\\n");
+            return E_NG;
         }
 EOT
     out_check( file, int_count, double_count, char_count )
@@ -386,7 +420,6 @@ ER getRawEntryDescriptor( CELLCB *p_cellcb, char_t *entry_path, void **rawEntryD
 
     ercd = cTECSInfo_findRawEntryDescriptor( entry_path, &rawEntryDescDesc, &entryDesc );
     if( ercd != E_OK ){
-        printf( "call_sTask: error cTECSInfo_findRawEntryDescriptor( entry_path=%s ) = %d\\n", entry_path, ercd );
     }
     else {
 #define NAME_LEN  (256)
@@ -399,10 +432,8 @@ ER getRawEntryDescriptor( CELLCB *p_cellcb, char_t *entry_path, void **rawEntryD
         cSignatureInfo_set_descriptor( signatureDesc );
         ercd = cSignatureInfo_getName( name, NAME_LEN );
         if( ercd != E_OK ){
-            printf( "getRawEntryDescriptor: error cannot get signature name. expectd: \'%s\'\\n", expected_signature );
         }
         if( strcmp( name, expected_signature ) != 0 ){
-            printf( "getRawEntryDescriptor: error signature name \'%s\' mismatch expecting \'%s\'\\n", name, expected_signature );
             ercd = E_NOEXS;
         }
         cREDInfo_getRawDescriptor( 0, rawEntryDesc );

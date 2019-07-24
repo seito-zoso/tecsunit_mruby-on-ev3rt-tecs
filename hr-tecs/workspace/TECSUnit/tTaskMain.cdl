@@ -2,7 +2,7 @@
 
 celltype tTaskMain {
     entry sTaskBody            eBody;
-    // call  sTECSUnit            cUnit;
+    call  sTECSUnit            cUnit;
     call  sJSMN                cJSMN;
 
     /* EV3RT+TECS */
@@ -88,7 +88,7 @@ region rDomainEV3{
     };
     cell tTaskMain TaskMain {
         cTECSInfo  = TECSInfo.eTECSInfo;
-        // cUnit = TECSUnit.eUnit;
+        cUnit = TECSUnit.eUnit;
         cJSMN = JSMN.eJSMN;
 
         cKernel = HRP2Kernel.eKernel;

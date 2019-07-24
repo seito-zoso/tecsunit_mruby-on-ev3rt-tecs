@@ -369,7 +369,6 @@ eBody_main(CELLIDX idx)
         if( ercd == -1 ) return; /* jsmnエラー */
 
         if( VAR_arg_num_json != VAR_arg_num ){
-            // printf( "Error: Wrong number of VAR_arg_struct\n" );
             cLCD_drawString( "Error: Wrong number argments", 0, 0);
             while(1){
                 if( cButton_isPressed( ENTER_BUTTON ) ){
@@ -379,7 +378,28 @@ eBody_main(CELLIDX idx)
             }
             cKernel_delay( 500 );
         }
-        // cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
+
+        ercd2 = cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
+        if( ercd2 == E_OK ){
+            cLCD_drawString( "Test Result : E_OK", 0, 0);
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+        }else{
+            cLCD_drawString( "Test Result : E_NG", 0, 0);
+            while(1){
+                if( cButton_isPressed( ENTER_BUTTON ) ){
+                    cLCD_clear();
+                    break;
+                }
+            }
+            cKernel_delay( 500 );
+        }
+
         if( ercd == 2 ){
             cLCD_drawString( "All targets are checked", 0, 0);
             while(1){

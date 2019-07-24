@@ -10,25 +10,29 @@ import( <TECSInfo.cdl> );
 import( <target.cdl> );
 
 import( <jsmn.cdl> );
-// signature sTECSUnit {
-//   void main( [in,string] const char_t *cell_path,
-//              [in,string] const char_t *entry_path,
-//              [in,string] const char_t *signature_path,
-//              [in,string] const char_t *function_path,
-//              [in] const struct tecsunit_obj *arguments,
-//              [in] const struct tecsunit_obj *exp_val );
-// };
+signature sTECSUnit {
+  ER main( [in,string] const char_t *cell_path,
+             [in,string] const char_t *entry_path,
+             [in,string] const char_t *signature_path,
+             [in,string] const char_t *function_path,
+             [in] const struct tecsunit_obj *arguments,
+             [in] const struct tecsunit_obj *exp_val );
+};
 
 import( "tTaskMain.cdl" );
 
-// generate( TECSUnitPlugin, rDomainEV3::TaskMain, "" );
+generate( TECSUnitPlugin, rDomainEV3::TaskMain, "" );
 generate( JSMNPlugin, rDomainEV3::TaskMain, "" );
 
 region rDomainEV3{
 
-//     // cell tTECSUnit TECSUnit {
-//     //     cTECSInfo  = TECSInfo.eTECSInfo;
-//     // };
+    cell tTECSUnit TECSUnit {
+        cTECSInfo  = TECSInfo.eTECSInfo;
+        cLCD_tmp = LCD.eLCD;
+        cButton_tmp = Button.eButton;
+        cKernel_tmp = HRP2Kernel.eKernel;
+        cFatFile_tmp = FatFile.eFatFile;
+    };
 
     cell tFatFile FatFile{};
     cell tJSMN JSMN {

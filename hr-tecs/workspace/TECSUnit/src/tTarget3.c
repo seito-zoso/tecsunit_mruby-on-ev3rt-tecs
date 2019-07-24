@@ -50,6 +50,14 @@ eTarget3_send(CELLIDX idx, const int8_t* buf, int8_t len)
 	for( i = 0 ; i < len; i++ ){
 		printf("%d:%d\n", i+1, buf[i]);
 	}
+  cLCD_drawString( "This is Target3_send", 0, 0);
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  cKernel_delay( 500 );
 	return(ercd);
 }
 
@@ -70,8 +78,14 @@ eTarget3_sendMessage(CELLIDX idx, const char_t* buf, int8_t len)
 	} /* end if VALID_IDX(idx) */
 
 	/* ここに処理本体を記述します #_TEFB_# */
-	printf("This is eTarget3_sendMessage\n");
-	printf("%s\n", buf);
+  cLCD_drawString( "This is Target3_sendMessage", 0, 0);
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  cKernel_delay( 500 );
 	return 1;
 }
 
@@ -80,23 +94,7 @@ eTarget3_sendMessage(CELLIDX idx, const char_t* buf, int8_t len)
  * global_name:  tTarget3_eTarget3_sendStruct
  * oneway:       false
  * #[</ENTRY_FUNC>]# */
-ER
-eTarget3_sendStruct(CELLIDX idx, const struct target_struct* data)
-{
-	CELLCB	*p_cellcb;
-	if (VALID_IDX(idx)) {
-		p_cellcb = GET_CELLCB(idx);
-	}
-	else {
-		/* エラー処理コードをここに記述します */
-	} /* end if VALID_IDX(idx) */
 
-	/* ここに処理本体を記述します #_TEFB_# */
-	printf("This is eTarget3_sendStruct\n");
-	printf("num = %d\n", data->number );
-	printf("name = %s\n", data->name );
-	return 1;
-}
 
 /* #[<ENTRY_FUNC>]# eTarget3_receiveMessage
  * name:         eTarget3_receiveMessage
@@ -115,7 +113,14 @@ eTarget3_receiveMessage(CELLIDX idx, char_t* buf, int8_t len)
 	} /* end if VALID_IDX(idx) */
 
 	/* ここに処理本体を記述します #_TEFB_# */
-	strcpy( buf, "test" );
+  cLCD_drawString( "This is Target3_receiveMessage", 0, 0);
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  cKernel_delay( 500 );
 	return;
 }
 
@@ -137,8 +142,15 @@ eTarget3_checkER(CELLIDX idx, ER eroor)
 	} /* end if VALID_IDX(idx) */
 
 	/* ここに処理本体を記述します #_TEFB_# */
-
-	return(ercd);
+  cLCD_drawString( "This is eTarget3_checkER", 0, 0);
+  while(1){
+      if( cButton_isPressed( ENTER_BUTTON ) ){
+          cLCD_clear();
+          break;
+      }
+  }
+  cKernel_delay( 500 );
+	return(error);
 }
 
 /* #[<POSTAMBLE>]#
