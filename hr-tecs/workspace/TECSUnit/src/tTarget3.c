@@ -36,7 +36,6 @@
 ER
 eTarget3_send(CELLIDX idx, const int8_t* buf, int8_t len)
 {
-	ER		ercd = E_OK;
 	CELLCB	*p_cellcb;
 	if (VALID_IDX(idx)) {
 		p_cellcb = GET_CELLCB(idx);
@@ -58,7 +57,7 @@ eTarget3_send(CELLIDX idx, const int8_t* buf, int8_t len)
       }
   }
   cKernel_delay( 500 );
-	return(ercd);
+	return 1;
 }
 
 /* #[<ENTRY_FUNC>]# eTarget3_sendMessage
@@ -121,7 +120,7 @@ eTarget3_receiveMessage(CELLIDX idx, char_t* buf, int8_t len)
       }
   }
   cKernel_delay( 500 );
-	return;
+	return 1;
 }
 
 /* #[<ENTRY_FUNC>]# eTarget3_checkER
@@ -132,7 +131,6 @@ eTarget3_receiveMessage(CELLIDX idx, char_t* buf, int8_t len)
 ER
 eTarget3_checkER(CELLIDX idx, ER eroor)
 {
-	ER		ercd = E_OK;
 	CELLCB	*p_cellcb;
 	if (VALID_IDX(idx)) {
 		p_cellcb = GET_CELLCB(idx);
@@ -150,7 +148,7 @@ eTarget3_checkER(CELLIDX idx, ER eroor)
       }
   }
   cKernel_delay( 500 );
-	return(error);
+	return 1;
 }
 
 /* #[<POSTAMBLE>]#

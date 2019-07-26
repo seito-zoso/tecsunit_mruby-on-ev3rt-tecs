@@ -135,7 +135,9 @@ EOT
           sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
           sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
           sig.get_namespace_path.to_s =~ /::s.*VM/ || \
-          sig.get_namespace_path.to_s =~ /::sMain/ then
+          sig.get_namespace_path.to_s =~ /::sMain/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Alarm/ || \
+          sig.get_namespace_path.to_s =~ /::sFixedSizeMemoryPool/ then
         # ignnore these signatures
       else
         file.print <<EOT
@@ -183,7 +185,9 @@ EOT
           sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
           sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
           sig.get_namespace_path.to_s =~ /::s.*VM/ || \
-          sig.get_namespace_path.to_s =~ /::sMain/ then
+          sig.get_namespace_path.to_s =~ /::sMain/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Alarm/ || \
+          sig.get_namespace_path.to_s =~ /::sFixedSizeMemoryPool/ then
         # ignnore these signatures
       else
         file.print <<EOT
@@ -207,7 +211,9 @@ EOT
           sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
           sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
           sig.get_namespace_path.to_s =~ /::s.*VM/ || \
-          sig.get_namespace_path.to_s =~ /::sMain/ then
+          sig.get_namespace_path.to_s =~ /::sMain/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Alarm/ || \
+          sig.get_namespace_path.to_s =~ /::sFixedSizeMemoryPool/ then
       # ignnore these signatures
       else
         if flag then
@@ -295,9 +301,9 @@ EOT
           end
         else
           if param.include?("struct") then
-            paramSet.concat("&arguments[#{i}].data")
+            paramSet.concat("&arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}")
           else
-            paramSet.concat("arguments[#{i}].data")
+            paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
           end
         end
         i = i + 1
@@ -315,15 +321,15 @@ EOT
           end
         else
           if param.include?("struct") then
-            paramSet.concat(", &arguments[#{i}].data")
+            paramSet.concat(", &arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}")
           else
-            paramSet.concat(", arguments[#{i}]")
+            paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
           end
         end
         i = i + 1
       end
       # exp_valの追加
-      exp_val = "exp_val->data"
+      exp_val = "exp_val->" + "data.mem_#{decl.get_type.get_type_str.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}"
     }
     # 最後のシグニチャ関数を出力
     if flag then # シグニチャ関数の１つ目
@@ -346,9 +352,9 @@ EOT
     file.print <<EOT
       if( !strcmp( function_path, "#{str}" ) ){
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-            return E_OK;
+            return 0;
         }else{
-            return E_NG;
+            return -1;
         }
 EOT
     out_check( file, int_count, double_count, char_count )
@@ -361,9 +367,9 @@ EOT
     file.print <<EOT
       else if( !strcmp( function_path, "#{str}" ) ){
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
-            return E_OK;
+            return 0;
         }else{
-            return E_NG;
+            return -1;
         }
 EOT
     out_check( file, int_count, double_count, char_count )
