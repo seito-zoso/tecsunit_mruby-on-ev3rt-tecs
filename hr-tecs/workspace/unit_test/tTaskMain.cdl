@@ -1,0 +1,111 @@
+// import_C("json_struct.h");
+
+celltype tTaskMain {
+    entry sTaskBody            eBody;
+    // call  sTECSUnit            cUnit;
+    // call  sJSMN                cJSMN;
+
+    /* EV3RT+TECS */
+    call sKernel cKernel;
+    call sLCD cLCD;
+    call sButton cButton;
+
+    /*----- TECSInfo -----*/
+    call nTECSInfo::sTECSInfo cTECSInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sNamespaceInfo cNSInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sRegionInfo    cRegionInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sCellInfo      cCellInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sSignatureInfo cSignatureInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sCelltypeInfo  cCelltypeInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sVarDeclInfo   cVarDeclInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sTypeInfo      cTypeInfo;
+    /*----- TECSInfo -----*/
+
+    /*----- TECSUnit -----*/
+    [dynamic, optional]
+      call ::sTarget1 cTarget1;
+    // [dynamic, optional]
+      // call ::sTarget2 cTarget2;
+    // [dynamic, optional]
+      // call ::sTarget3 cTarget3;
+    /*----- TECSUnit -----*/
+
+    /*----- RawEntryDescriptor -----*/
+    [dynamic,optional]
+      call  nTECSInfo::sRawEntryDescriptorInfo   cREDInfo;
+    [dynamic,optional]
+      call  nTECSInfo::sEntryInfo     cEntryInfo;
+    /*----- RawEntryDescriptor -----*/
+
+
+    attr{
+        int16_t NAME_LEN = 128;
+        // int16_t ARG_NAME_LEN = 128;
+        // int16_t ARG_DIM = 32;
+        // int16_t TARGET_NUM = 100;
+    };
+    var{
+        [size_is(NAME_LEN)]
+            char_t  *target_path;
+        void *rawDesc;
+        // [size_is(NAME_LEN)]
+        //     char_t  *cell_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *region_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *region_cell_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *celltype_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *entry_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *entry_path_tmp;
+        // [size_is(NAME_LEN)]
+        //     char_t  *signature_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *function_path;
+        // [size_is(NAME_LEN)]
+        //     char_t  *function_path_tmp;
+        // int8_t arg_num;
+        // int8_t arg_num_json;
+        // [size_is(NAME_LEN)]
+        //     char_t *exp_type;
+        // char_t  arg[32][128];
+        // char_t  arg_type[32][128];
+        // int8_t find_entry;
+        // int8_t find_func;
+        // [size_is(ARG_DIM)]
+        //     struct tecsunit_obj *arg_struct;
+        // struct tecsunit_obj exp_struct;
+    };
+};
+
+
+
+
+region rDomainEV3{
+    cell tTask Task {
+        taskAttribute   = C_EXP("TA_ACT");
+        priority        = C_EXP("EV3_MRUBY_VM_PRIORITY");
+        systemStackSize = C_EXP("MRUBY_VM_STACK_SIZE");
+        //userStackSize = C_EXP("STACK_SIZE");
+        cBody         = TaskMain.eBody;
+    };
+    cell tTaskMain TaskMain {
+        cTECSInfo  = TECSInfo.eTECSInfo;
+        // cUnit = TECSUnit.eUnit;
+        // cJSMN = JSMN.eJSMN;
+
+        cKernel = HRP2Kernel.eKernel;
+        cButton = Button.eButton;
+        cLCD = LCD.eLCD;
+        // cTarget1 = Target1.eTarget1;
+    };
+};

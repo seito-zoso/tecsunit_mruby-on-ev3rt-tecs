@@ -1,0 +1,53 @@
+// import_C("target_struct.h");
+/* TECSUnit テスト対象シグニチャ */
+signature sTarget1 {
+  int double([in] int arg);
+};
+signature sTarget2 {
+  int add([in] int arg1, [in] int arg2);
+};
+signature sTarget3 {
+  ER send( [in, size_is(len)] const int8_t *buf, [in] int8_t len );
+  ER sendMessage( [in, size_is(len)] const char_t *buf, [in] int8_t len );
+  // ER sendStruct( [in] const struct target_struct *data ); // TODO
+  ER receiveMessage( [out, size_is(len)] char_t *buf, [in] int8_t len );
+  ER checkER([in] ER eroor);
+};
+
+/* TECSUnit テスト対象セルタイプ */
+celltype tTarget1 {
+  entry sTarget1  eTarget1;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
+};
+celltype tTarget2 {
+  entry sTarget2  eTarget2;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
+};
+celltype tTarget3 {
+  entry sTarget3  eTarget3;
+  call  sLCD      cLCD;
+  call  sButton   cButton;
+  call  sKernel   cKernel;
+};
+/* TECSUnit テスト対象セル */
+region rDomainEV3 {
+  cell tTarget1 Target1 {
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
+  };
+  cell tTarget2 Target2 {
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
+  };
+  cell tTarget3 Target3 {
+    cLCD = LCD.eLCD;
+    cButton = Button.eButton;
+    cKernel = HRP2Kernel.eKernel;
+  };
+};
