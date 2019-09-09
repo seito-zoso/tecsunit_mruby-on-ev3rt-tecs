@@ -1,3 +1,4 @@
+#include"t_stddef.h"
 struct tecsunit_obj{
   char    type[32]; /* TECSInfoにより型名を格納します */
   union{

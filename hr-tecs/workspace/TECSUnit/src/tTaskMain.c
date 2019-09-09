@@ -379,7 +379,7 @@ eBody_main(CELLIDX idx)
             cKernel_delay( 500 );
         }
 
-        ercd2 = cUnit_main( VAR_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
+        ercd2 = cUnit_main( VAR_region_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
         if( ercd2 == E_OK ){
             cLCD_drawString( "Test Result : E_OK", 0, 0);
             while(1){
