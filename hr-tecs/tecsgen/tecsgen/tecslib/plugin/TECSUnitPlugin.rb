@@ -289,13 +289,15 @@ EOT
       param = paramDecl.get_type.get_type_str
       if paramSet == "" then # paramが空
         if param.include?("*") && !param.include?("const") then
-          if param.include?("int") || param.include?("short") || param.include?("long") then
+          if param.include?("int") || param.include?("INT") ||\
+             param.include?("short") || param.include?("SHORT") ||\
+             param.include?("long") || param.include?("LONG") then
             paramSet.concat("VAR_out_int[#{int_count}]")
             int_count += 1
           elsif param.include?("double") || param.include?("float") then
             paramSet.concat("VAR_out_double[#{double_count}]")
             double_count += 1
-          elsif param.include?("char") then
+          elsif param.include?("char") || param.include?("CHAR") then
             paramSet.concat("VAR_out_char[#{char_count}]")
             char_count += 1
           end
@@ -303,19 +305,27 @@ EOT
           if param.include?("struct") then
             paramSet.concat("&arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}")
           else
-            paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
+            if param.include?("double") || param.include?("float") then
+              paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('32_t', '').sub('64_t', '')}")
+            elsif param.include?("char") then
+              paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('_t', '')}")
+            else
+              paramSet.concat("arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
+            end
           end
         end
         i = i + 1
       else # 2つ目以降
         if param.include?("*") && !param.include?("const") then
-          if param.include?("int") || param.include?("short") || param.include?("long") then
+          if param.include?("int") || param.include?("INT") ||\
+             param.include?("short") || param.include?("SHORT") ||\
+             param.include?("long") || param.include?("LONG") then
             paramSet.concat(", VAR_out_int[#{int_count}]")
             int_count += 1
           elsif param.include?("double") || param.include?("float") then
             paramSet.concat(", VAR_out_double[#{double_count}]")
             double_count += 1
-          elsif param.include?("char") then
+          elsif param.include?("char") || param.include?("CHAR") then
             paramSet.concat(", VAR_out_char[#{char_count}]")
             char_count += 1
           end
@@ -323,13 +333,25 @@ EOT
           if param.include?("struct") then
             paramSet.concat(", &arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}")
           else
-            paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
+            if param.include?("double") || param.include?("float") then
+              paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('32_t', '').sub('64_t', '')}")
+            elsif param.include?("char") then
+              paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '').sub('_t', '')}")
+            else
+              paramSet.concat(", arguments[#{i}].data.mem_#{param.sub(/\*/, '_buf').sub('const ', '')}")
+            end
           end
         end
         i = i + 1
       end
       # exp_valの追加
-      exp_val = "exp_val->" + "data.mem_#{decl.get_type.get_type_str.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}"
+      if decl.get_type.get_type_str.include?("void") then
+        exp_val = ""
+      elsif decl.get_type.get_type_str.include?("double") || decl.get_type.get_type_str.include?("float") then
+        exp_val = "exp_val->" + "data.mem_#{decl.get_type.get_type_str.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').sub('32_t', '').sub('64_t', '')}"
+      else
+        exp_val = "exp_val->" + "data.mem_#{decl.get_type.get_type_str.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}"
+      end
     }
     # 最後のシグニチャ関数を出力
     if flag then # シグニチャ関数の１つ目
@@ -349,7 +371,14 @@ EOT
   end
 # else無し
   def print_call_desc1( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
-    file.print <<EOT
+    if exp_val == "" then
+      file.print <<EOT
+      if( !strcmp( function_path, "#{str}" ) ){
+        c#{signature.get_name[1..-1]}_#{str}( #{paramSet} );
+        return 0;
+EOT
+    else
+      file.print <<EOT
       if( !strcmp( function_path, "#{str}" ) ){
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
             return 0;
@@ -357,6 +386,7 @@ EOT
             return -1;
         }
 EOT
+    end
     out_check( file, int_count, double_count, char_count )
     file.print <<EOT
       }
@@ -364,7 +394,14 @@ EOT
   end
 # elseあり
   def print_call_desc2( file, str, exp_val, signature, paramSet, int_count, double_count, char_count )
-    file.print <<EOT
+    if exp_val == "" then
+      file.print <<EOT
+      else if( !strcmp( function_path, "#{str}" ) ){
+        c#{signature.get_name[1..-1]}_#{str}( #{paramSet} );
+        return 0;
+EOT
+    else
+      file.print <<EOT
       else if( !strcmp( function_path, "#{str}" ) ){
         if( #{exp_val} == c#{signature.get_name[1..-1]}_#{str}( #{paramSet} ) ){
             return 0;
@@ -372,6 +409,7 @@ EOT
             return -1;
         }
 EOT
+    end
     out_check( file, int_count, double_count, char_count )
     file.print <<EOT
       }

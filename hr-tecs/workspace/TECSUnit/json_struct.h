@@ -6,7 +6,7 @@ struct tecsunit_obj{
  * 新しい型はここに追加してください
  */
     void *mem_void_buf;
-    // TCHAR *mem_tchar_buf;
+    TCHAR mem_TCHAR_buf[256];
     // ER mem_er;
     // struct target_struct mem_target_struct_buf;
 
@@ -311,6 +311,7 @@ struct tecsunit_obj{
  */
 #ifdef TECSGEN
     mrb_state       mem_mrb_state;
+    // mrb_state       mem_mrb_state_buf[64];
     mrb_irep        mem_mrb_irep;
     mrb_context     mem_mrb_context;
     mrbc_context    mem_mrbc_context;

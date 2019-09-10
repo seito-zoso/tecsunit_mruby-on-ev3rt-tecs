@@ -265,10 +265,24 @@ EOT
 
     ret_type_list = []
 
-    namespace.travers_all_signature{ |signature|
-      if signature.get_namespace_path.to_s =~ /nTECSInfo::/ || signature.get_namespace_path.to_s =~ /::sTask.*/ || signature.get_namespace_path.to_s =~ /::sAccessor/ || signature.get_namespace_path.to_s =~ /::sTECSUnit/ || signature.get_namespace_path.to_s =~ /::sJSMN/ || signature.get_namespace_path.to_s =~ /::s.*Kernel/ || signature.get_namespace_path.to_s =~ /::s.*Semaphore/ || signature.get_namespace_path.to_s =~ /::s.*Eventflag/ || signature.get_namespace_path.to_s =~ /::s.*Dataqueue/ then
+    namespace.travers_all_signature{ |sig|
+      if  sig.get_namespace_path.to_s =~ /nTECSInfo::/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Task.*/ || \
+          sig.get_namespace_path.to_s =~ /::sAccessor/ || \
+          sig.get_namespace_path.to_s =~ /::sTECSUnit/ || \
+          sig.get_namespace_path.to_s =~ /::sJSMN/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Kernel/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Semaphore/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Eventflag/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Dataqueue/ || \
+          sig.get_namespace_path.to_s =~ /::sInitialize.*/ || \
+          sig.get_namespace_path.to_s =~ /::s.*VM/ || \
+          sig.get_namespace_path.to_s =~ /::sMain/ || \
+          sig.get_namespace_path.to_s =~ /::s.*Alarm/ || \
+          sig.get_namespace_path.to_s =~ /::sFixedSizeMemoryPool/ then
+        # ignnore these signatures
       else
-        signature.each_param{ |decl, paramDecl|
+        sig.each_param{ |decl, paramDecl|
           param = paramDecl.get_type.get_type_str
           if param.include?("*") then
             if param.include?("const") then
@@ -463,16 +477,28 @@ EOT
 
   def print_arr_list( file, arr_list )
     arr_list.each_with_index { |obj, idx|
-      if obj.include?("double") || obj.include?("float") then
+      if obj.include?("void") then
         if idx == 0 then
           file.print <<EOT
                                 if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                  /* ignore */
 EOT
         else
           file.print <<EOT
                                 }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                    arguments[j].data.mem_#{obj..sub(/\*/, '_buf').sub('const ', '')}[m] = atof( VAR_tmp_str );
+                                  /* ignore */
+EOT
+        end
+      elsif obj.include?("double") || obj.include?("float") then
+        if idx == 0 then
+          file.print <<EOT
+                                if( !strcmp(arguments[j].type,"#{obj}") ){
+                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('32_t', '').sub('64_t', '')}[m] = atof( VAR_tmp_str );
+EOT
+        else
+          file.print <<EOT
+                                }else if( !strcmp(arguments[j].type,"#{obj}") ){
+                                    arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('32_t', '').sub('64_t', '')}[m] = atof( VAR_tmp_str );
 EOT
         end
       else
@@ -513,10 +539,17 @@ EOT
                                 }
 EOT
     char_list.each{ |obj|
-      file.print <<EOT
+      if obj.include?("**") then
+        file.print <<EOT
                             }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                strcpy_n( arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '')}, t[i].end - t[i].start, VAR_json_str + t[i].start );
+                              /* ignore */
 EOT
+      else
+        file.print <<EOT
+                            }else if( !strcmp(arguments[j].type,"#{obj}") ){
+                                strcpy_n( arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('_t', '')}, t[i].end - t[i].start, VAR_json_str + t[i].start );
+EOT
+      end
     }
   end
 
@@ -526,12 +559,12 @@ EOT
         if idx == 0 then
           file.print <<EOT
                             if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj} = atof( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj.sub('32_t', '').sub('64_t', '')} = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                             }else if( !strcmp(arguments[j].type,"#{obj}") ){
-                                arguments[j].data.mem_#{obj} = atof( VAR_tmp_str );
+                                arguments[j].data.mem_#{obj.sub('32_t', '').sub('64_t', '')} = atof( VAR_tmp_str );
 EOT
         end
       else
@@ -586,12 +619,12 @@ EOT
         elsif struct_mem_type_list[idx][idx2].include?("double") || struct_mem_type_list[idx][idx2].include?("float") then
           file.print <<EOT
                                         strcpy_n( VAR_tmp_str, t[i].end - t[i].start, VAR_json_str + t[i].start );
-                                        arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}.#{mem} = atof( VAR_tmp_str );
+                                        arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').sub('32_t', '').sub('64_t', '')}.#{mem} = atof( VAR_tmp_str );
 EOT
         else
           file.print <<EOT
                                         strcpy_n( VAR_tmp_str, t[i].end - t[i].start, VAR_json_str + t[i].start );
-                                        arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '')}.#{mem} = atoi( VAR_tmp_str );
+                                        arguments[j].data.mem_#{obj.sub(/\*/, '_buf').sub('const ', '').sub('struct ', '').sub('32_t', '').sub('64_t', '')}.#{mem} = atoi( VAR_tmp_str );
 EOT
         end
       }
@@ -611,16 +644,29 @@ EOT
 
   def print_ret_type_list( file, ret_type_list )
     ret_type_list.each_with_index{ |obj, idx|
-      if obj.include?("double") || obj.include?("float") then
+      if obj.include?("void") then
         if idx == 0 then
           file.print <<EOT
                         if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj} = atof( VAR_tmp_str );
+                          /* ignore */
 EOT
         else
           file.print <<EOT
                         }else if( !strcmp( exp_val->type, "#{obj}") ){
-                            exp_val->data.mem_#{obj} = atof( VAR_tmp_str );
+                          /* ignore */
+EOT
+        end
+
+      elsif obj.include?("double") || obj.include?("float") then
+        if idx == 0 then
+          file.print <<EOT
+                        if( !strcmp( exp_val->type, "#{obj}") ){
+                            exp_val->data.mem_#{obj.sub('32_t', '').sub('64_t', '')} = atof( VAR_tmp_str );
+EOT
+        else
+          file.print <<EOT
+                        }else if( !strcmp( exp_val->type, "#{obj}") ){
+                            exp_val->data.mem_#{obj.sub('32_t', '').sub('64_t', '')} = atof( VAR_tmp_str );
 EOT
         end
       else
