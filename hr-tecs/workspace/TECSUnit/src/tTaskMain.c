@@ -379,9 +379,23 @@ eBody_main(CELLIDX idx)
             cKernel_delay( 500 );
         }
 
+        /* Unit Test */
         ercd2 = cUnit_main( VAR_region_cell_path, VAR_entry_path, VAR_signature_path, VAR_function_path, VAR_arg_struct, &VAR_exp_struct );
+
+        /* Wait until Enter is pressed */
+        while(1){
+            if( cButton_isPressed( ENTER_BUTTON ) ){
+                cLCD_clear();
+                break;
+            }
+        }
+        cKernel_delay( 500 );
+
+        /* Check the Result */
+        cLCD_setFont( EV3_FONT_MEDIUM );
         if( ercd2 == E_OK ){
-            cLCD_drawString( "Test Result : E_OK", 0, 0);
+            cLCD_drawString( "Test Result", 0, 0);
+            cLCD_drawString( " : E_OK", 0, 1);
             while(1){
                 if( cButton_isPressed( ENTER_BUTTON ) ){
                     cLCD_clear();
@@ -390,7 +404,8 @@ eBody_main(CELLIDX idx)
             }
             cKernel_delay( 500 );
         }else{
-            cLCD_drawString( "Test Result : E_NG", 0, 0);
+            cLCD_drawString( "Test Result", 0, 0);
+            cLCD_drawString( " : E_NG", 0, 1);
             while(1){
                 if( cButton_isPressed( ENTER_BUTTON ) ){
                     cLCD_clear();
@@ -401,7 +416,10 @@ eBody_main(CELLIDX idx)
         }
 
         if( ercd == 2 ){
-            cLCD_drawString( "All targets are checked", 0, 0);
+            cLCD_setFont( EV3_FONT_MEDIUM );
+            cLCD_drawString( "All targets", 0, 0);
+            cLCD_drawString( "      are checked!", 0, 1);
+            cLCD_drawString( "Press BACK Button ", 0, 3);
             while(1){
                 if( cButton_isPressed( ENTER_BUTTON ) ){
                     cLCD_clear();
